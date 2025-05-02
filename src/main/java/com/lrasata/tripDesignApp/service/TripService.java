@@ -2,43 +2,56 @@ package com.lrasata.tripDesignApp.service;
 
 import com.lrasata.tripDesignApp.entity.Trip;
 import com.lrasata.tripDesignApp.repository.TripRepository;
+import com.lrasata.tripDesignApp.service.dto.TripDTO;
+import com.lrasata.tripDesignApp.service.mapper.TripMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class TripService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(TripService.class);
+
     @Autowired
     private TripRepository tripRepository;
 
-    public List<Trip> getAllTrips() {
-        return tripRepository.findAll();
+    @Autowired
+    private TripMapper tripMapper;
+
+    public List<TripDTO> findAll() {
+        LOG.debug("Request to get all trips");
+        return tripRepository.findAll().stream().map(tripMapper::toDto).collect(Collectors.toList());
     }
 
-    public Optional<Trip> getTripById(Long id) {
-        return tripRepository.findById(id);
+    public Optional<TripDTO> findOneById(Long id) {
+        LOG.debug("Request to get Trip : {}", id);
+        return tripRepository.findById(id).map(tripMapper::toDto);
     }
 
-    public Trip saveTrip(Trip trip) {
-        return tripRepository.save(trip);
+    public TripDTO saveTrip(TripDTO tripDTO) {
+        LOG.debug("Request to save Trip : {}", tripDTO);
+        Trip entityTrip = tripMapper.toEntity(tripDTO);
+        Trip savedTrip = tripRepository.save(entityTrip);
+        return tripMapper.toDto(savedTrip);
     }
 
-    public Trip updateTrip(Long id, Trip tripDetails) {
-        Trip trip = tripRepository.findById(id).orElseThrow(() -> new RuntimeException("Trip not found"));
-        trip.setName(tripDetails.getName());
-        trip.setDescription(tripDetails.getDescription());
-        trip.setBudget(tripDetails.getBudget());
+    public TripDTO updateTrip(Long id, TripDTO tripDTO) {
+        LOG.debug("Request to update Trip : {}", tripDTO);
+        tripRepository.findById(id).orElseThrow(() -> new RuntimeException("Trip not found"));
 
-        trip.setDepartureLocation(tripDetails.getDepartureLocation());
-        trip.setDepartureDate(tripDetails.getDepartureDate());
 
-        trip.setArrivalLocation(tripDetails.getArrivalLocation());
-        trip.setReturnDate(tripDetails.getReturnDate());
-
-        return tripRepository.save(trip);
+        Trip trip = tripMapper.toEntity(tripDTO);
+        Trip savedTrip = tripRepository.save(trip);
+        return tripMapper.toDto(savedTrip);
     }
 
     public void deleteTrip(Long id) {
