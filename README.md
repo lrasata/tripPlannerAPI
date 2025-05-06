@@ -1,4 +1,4 @@
-# Trip Design App
+# Trip Design App - Restful web API
 > Project under construction
 
 A Spring Boot application to manage and design travel itineraries.  

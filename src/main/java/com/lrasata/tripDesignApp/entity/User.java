@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "app_user")
 public class User {
 
     @Id
@@ -17,13 +18,13 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @ManyToMany
-    @JoinTable(
-            name = "user_trip",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "trip_id")
-    )
-    private List<Trip> trips = new ArrayList<>();
+//    @ManyToMany
+//    @JoinTable(
+//            name = "user_trip",
+//            joinColumns = @JoinColumn(name = "user_id"),
+//            inverseJoinColumns = @JoinColumn(name = "trip_id")
+//    )
+//    private List<Trip> trips = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -45,23 +46,23 @@ public class User {
         this.email = email;
     }
 
-    public List<Trip> getTrips() {
-        return trips;
-    }
-
-    public void setTrips(List<Trip> trips) {
-        this.trips = trips;
-    }
-
-    public void addTrip(Trip trip) {
-        trips.add(trip);
-        trip.getParticipants().add(this);
-    }
-
-    public void removeTrip(Trip trip) {
-        trips.remove(trip);
-        trip.getParticipants().remove(this);
-    }
+//    public List<Trip> getTrips() {
+//        return trips;
+//    }
+//
+//    public void setTrips(List<Trip> trips) {
+//        this.trips = trips;
+//    }
+//
+//    public void addTrip(Trip trip) {
+//        trips.add(trip);
+//        trip.getParticipants().add(this);
+//    }
+//
+//    public void removeTrip(Trip trip) {
+//        trips.remove(trip);
+//        trip.getParticipants().remove(this);
+//    }
 
     public Role getRole() {
         return role;

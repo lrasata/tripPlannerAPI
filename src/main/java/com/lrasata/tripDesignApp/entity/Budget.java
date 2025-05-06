@@ -13,8 +13,8 @@ public class Budget {
     private Integer total;
     private Integer budgetPerPerson;
 
-    @OneToOne(mappedBy = "budget")
-    private Trip trip;
+//    @OneToOne(mappedBy = "budget")
+//    private Trip trip;
 
     @OneToOne(mappedBy = "budget")
     private Activity activity;
@@ -39,13 +39,13 @@ public class Budget {
         this.total = total;
     }
 
-    public Trip getTrip() {
-        return trip;
-    }
-
-    public void setTrip(Trip trip) {
-        this.trip = trip;
-    }
+//    public Trip getTrip() {
+//        return trip;
+//    }
+//
+//    public void setTrip(Trip trip) {
+//        this.trip = trip;
+//    }
 
     public Activity getActivity() {
         return activity;

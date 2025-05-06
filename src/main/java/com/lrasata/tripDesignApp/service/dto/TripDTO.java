@@ -16,29 +16,29 @@ public class TripDTO implements Serializable {
 
     private String description;
 
-    @NotNull
     private String departureLocation;
 
-    @NotNull
     private Date departureDate;
 
-    @NotNull
     private String arrivalLocation;
 
-    @NotNull
     private Date returnDate;
 
-    private TripBudgetDTO budget;
-    private List<ActivityDTO> activities;
-    private List<Long> participantIds;
+//    private TripBudgetDTO budget;
+//    private List<ActivityDTO> activities;
+//    private List<Long> participantIds;
 
     // Constructors
     public TripDTO() {
     }
 
-    public TripDTO(Long id, String name, String description, String departureLocation, Date departureDate,
-                   String arrivalLocation, Date returnDate, TripBudgetDTO budget,
-                   List<ActivityDTO> activities, List<Long> participantIds) {
+    public TripDTO(Long id,
+                   String name,
+                   String description,
+                   String departureLocation,
+                   Date departureDate,
+                   String arrivalLocation,
+                   Date returnDate) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -46,9 +46,9 @@ public class TripDTO implements Serializable {
         this.departureDate = departureDate;
         this.arrivalLocation = arrivalLocation;
         this.returnDate = returnDate;
-        this.budget = budget;
-        this.activities = activities;
-        this.participantIds = participantIds;
+//        this.budget = budget;
+//        this.activities = activities;
+//        this.participantIds = participantIds;
     }
 
     public Long getId() {
@@ -107,29 +107,29 @@ public class TripDTO implements Serializable {
         this.returnDate = returnDate;
     }
 
-    public TripBudgetDTO getBudget() {
-        return budget;
-    }
-
-    public void setBudget(TripBudgetDTO budget) {
-        this.budget = budget;
-    }
-
-    public List<ActivityDTO> getActivities() {
-        return activities;
-    }
-
-    public void setActivities(List<ActivityDTO> activities) {
-        this.activities = activities;
-    }
-
-    public List<Long> getParticipantIds() {
-        return participantIds;
-    }
-
-    public void setParticipantIds(List<Long> participantIds) {
-        this.participantIds = participantIds;
-    }
+//    public TripBudgetDTO getBudget() {
+//        return budget;
+//    }
+//
+//    public void setBudget(TripBudgetDTO budget) {
+//        this.budget = budget;
+//    }
+//
+//    public List<ActivityDTO> getActivities() {
+//        return activities;
+//    }
+//
+//    public void setActivities(List<ActivityDTO> activities) {
+//        this.activities = activities;
+//    }
+//
+//    public List<Long> getParticipantIds() {
+//        return participantIds;
+//    }
+//
+//    public void setParticipantIds(List<Long> participantIds) {
+//        this.participantIds = participantIds;
+//    }
 
     @Override
     public boolean equals(Object o) {
