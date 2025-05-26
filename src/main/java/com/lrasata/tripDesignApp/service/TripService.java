@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,6 +32,21 @@ public class TripService {
         LOG.debug("Request to get all trips");
         return tripRepository.findAll().stream().map(tripMapper::toDto).collect(Collectors.toList());
     }
+
+    public List<TripDTO> findTripsInPast() {
+        return tripRepository.findByDepartureDateBefore(LocalDate.now())
+                .stream()
+                .map(tripMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<TripDTO> findTripsInFuture() {
+        return tripRepository.findByDepartureDateAfter(LocalDate.now())
+                .stream()
+                .map(tripMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
 
     public Optional<TripDTO> findOneById(Long id) {
         LOG.debug("Request to get Trip : {}", id);

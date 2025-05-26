@@ -2,8 +2,8 @@ package com.lrasata.tripDesignApp.entity;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -15,9 +15,9 @@ public class Trip {
     private String name;
     private String description;
     private String departureLocation;
-    private Date departureDate;
+    private LocalDate departureDate;
     private String arrivalLocation;
-    private Date returnDate;
+    private LocalDate returnDate;
 
 //    @OneToOne(cascade = CascadeType.ALL)
 //    @JoinColumn(name = "budget_id", referencedColumnName = "id")
@@ -58,11 +58,11 @@ public class Trip {
         this.departureLocation = departureLocation;
     }
 
-    public Date getDepartureDate() {
+    public LocalDate getDepartureDate() {
         return departureDate;
     }
 
-    public void setDepartureDate(Date departureDate) {
+    public void setDepartureDate(LocalDate departureDate) {
         this.departureDate = departureDate;
     }
 
@@ -74,11 +74,11 @@ public class Trip {
         this.arrivalLocation = arrivalLocation;
     }
 
-    public Date getReturnDate() {
+    public LocalDate getReturnDate() {
         return returnDate;
     }
 
-    public void setReturnDate(Date returnDate) {
+    public void setReturnDate(LocalDate returnDate) {
         this.returnDate = returnDate;
     }
 

@@ -29,10 +29,23 @@ public class TripController {
     private TripRepository tripRepository;
 
     @GetMapping
-    public ResponseEntity<List<TripDTO>> getAllTrips() {
-        LOG.debug("REST request to get all Trips");
-        return ResponseEntity.ok().body(tripService.findAll());
+    public ResponseEntity<List<TripDTO>> getAllTrips(
+            @RequestParam(required = false) String dateFilter
+    ) {
+        LOG.debug("REST request to get all Trips with filter: {}", dateFilter);
+        List<TripDTO> trips;
+
+        if ("past".equalsIgnoreCase(dateFilter)) {
+            trips = tripService.findTripsInPast();
+        } else if ("future".equalsIgnoreCase(dateFilter)) {
+            trips = tripService.findTripsInFuture();
+        } else {
+            trips = tripService.findAll();
+        }
+
+        return ResponseEntity.ok().body(trips);
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<TripDTO> getTripById(@PathVariable Long id) {
