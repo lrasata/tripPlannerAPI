@@ -64,8 +64,8 @@ public class TripService {
         LOG.debug("Request to update Trip : {}", tripDTO);
         tripRepository.findById(id).orElseThrow(() -> new RuntimeException("Trip not found"));
 
-
         Trip trip = tripMapper.toEntity(tripDTO);
+        trip.setId(id);
         Trip savedTrip = tripRepository.save(trip);
         return tripMapper.toDto(savedTrip);
     }
