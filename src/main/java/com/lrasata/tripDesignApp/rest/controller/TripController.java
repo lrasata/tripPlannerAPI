@@ -63,7 +63,7 @@ public class TripController {
                     HttpStatus.BAD_REQUEST, "A new trip cannot already have an ID"
             );
         }
-        TripDTO responseDTO = tripService.saveTrip(tripDTO);
+        TripDTO responseDTO = tripService.createTrip(tripDTO);
         return ResponseEntity
                 .created(URI.create("/api/trips/" + responseDTO.getId()))
                 .body(responseDTO);

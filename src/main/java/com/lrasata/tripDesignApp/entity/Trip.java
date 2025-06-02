@@ -3,8 +3,6 @@ package com.lrasata.tripDesignApp.entity;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 public class Trip {
@@ -14,16 +12,23 @@ public class Trip {
     private Long id;
     private String name;
     private String description;
-    private String departureLocation;
     private LocalDate departureDate;
-    private String arrivalLocation;
     private LocalDate returnDate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "departure_location_id")
+    private Location departureLocation;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "arrival_location_id")
+    private Location arrivalLocation;
 
 //    @OneToOne(cascade = CascadeType.ALL)
 //    @JoinColumn(name = "budget_id", referencedColumnName = "id")
 //    private Budget budget;
 //
 //    // One trip has many activities
+
 //    @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL, orphanRemoval = true)
 //    private List<Activity> activities = new ArrayList<>();
 
@@ -54,14 +59,6 @@ public class Trip {
         this.description = description;
     }
 
-    public String getDepartureLocation() {
-        return departureLocation;
-    }
-
-    public void setDepartureLocation(String departureLocation) {
-        this.departureLocation = departureLocation;
-    }
-
     public LocalDate getDepartureDate() {
         return departureDate;
     }
@@ -70,13 +67,6 @@ public class Trip {
         this.departureDate = departureDate;
     }
 
-    public String getArrivalLocation() {
-        return arrivalLocation;
-    }
-
-    public void setArrivalLocation(String arrivalLocation) {
-        this.arrivalLocation = arrivalLocation;
-    }
 
     public LocalDate getReturnDate() {
         return returnDate;
@@ -84,6 +74,22 @@ public class Trip {
 
     public void setReturnDate(LocalDate returnDate) {
         this.returnDate = returnDate;
+    }
+
+    public Location getDepartureLocation() {
+        return departureLocation;
+    }
+
+    public void setDepartureLocation(Location location) {
+        this.departureLocation = location;
+    }
+
+    public Location getArrivalLocation() {
+        return arrivalLocation;
+    }
+
+    public void setArrivalLocation(Location arrivalLocation) {
+        this.arrivalLocation = arrivalLocation;
     }
 
 //    public Budget getBudget() {

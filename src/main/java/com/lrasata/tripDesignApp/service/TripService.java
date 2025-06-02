@@ -1,8 +1,12 @@
 package com.lrasata.tripDesignApp.service;
 
+import com.lrasata.tripDesignApp.entity.Location;
 import com.lrasata.tripDesignApp.entity.Trip;
+import com.lrasata.tripDesignApp.repository.LocationRepository;
 import com.lrasata.tripDesignApp.repository.TripRepository;
+import com.lrasata.tripDesignApp.service.dto.LocationDTO;
 import com.lrasata.tripDesignApp.service.dto.TripDTO;
+import com.lrasata.tripDesignApp.service.mapper.LocationMapper;
 import com.lrasata.tripDesignApp.service.mapper.TripMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +28,9 @@ public class TripService {
 
     @Autowired
     private TripRepository tripRepository;
+
+    @Autowired
+    private LocationRepository locationRepository;
 
     @Autowired
     private TripMapper tripMapper;
@@ -53,20 +60,52 @@ public class TripService {
         return tripRepository.findById(id).map(tripMapper::toDto);
     }
 
-    public TripDTO saveTrip(TripDTO tripDTO) {
-        LOG.debug("Request to save Trip : {}", tripDTO);
-        Trip entityTrip = tripMapper.toEntity(tripDTO);
-        Trip savedTrip = tripRepository.save(entityTrip);
+    public TripDTO createTrip(TripDTO dto) {
+        // Get or create Departure Location
+        LocationDTO depDto = dto.getDepartureLocation();
+        Location departureLocation = locationRepository
+                .findByCityAndCountryCode(depDto.getCity(), depDto.getCountryCode())
+                .orElseGet(() -> locationRepository.save(LocationMapper.toEntity(depDto)));
+
+        // Get or create Arrival Location
+        LocationDTO arrDto = dto.getArrivalLocation();
+        Location arrivalLocation = locationRepository
+                .findByCityAndCountryCode(arrDto.getCity(), arrDto.getCountryCode())
+                .orElseGet(() -> locationRepository.save(LocationMapper.toEntity(arrDto)));
+
+        // Map Trip DTO to Entity
+        Trip trip = tripMapper.toEntity(dto, departureLocation, arrivalLocation);
+
+        // Save Trip
+        Trip savedTrip = tripRepository.save(trip);
+
+        // Return DTO
         return tripMapper.toDto(savedTrip);
     }
 
-    public TripDTO updateTrip(Long id, TripDTO tripDTO) {
-        LOG.debug("Request to update Trip : {}", tripDTO);
+
+    public TripDTO updateTrip(Long id, TripDTO dto) {
+        LOG.debug("Request to update Trip : {}", dto);
         tripRepository.findById(id).orElseThrow(() -> new RuntimeException("Trip not found"));
 
-        Trip trip = tripMapper.toEntity(tripDTO);
-        trip.setId(id);
+        // Get or create Departure Location
+        LocationDTO depDto = dto.getDepartureLocation();
+        Location departureLocation = locationRepository
+                .findByCityAndCountryCode(depDto.getCity(), depDto.getCountryCode())
+                .orElseGet(() -> locationRepository.save(LocationMapper.toEntity(depDto)));
+
+        // Get or create Arrival Location
+        LocationDTO arrDto = dto.getArrivalLocation();
+        Location arrivalLocation = locationRepository
+                .findByCityAndCountryCode(arrDto.getCity(), arrDto.getCountryCode())
+                .orElseGet(() -> locationRepository.save(LocationMapper.toEntity(arrDto)));
+
+        // Map Trip DTO to Entity
+        Trip trip = tripMapper.toEntity(dto, departureLocation, arrivalLocation);
+
+        // Save Trip
         Trip savedTrip = tripRepository.save(trip);
+
         return tripMapper.toDto(savedTrip);
     }
 

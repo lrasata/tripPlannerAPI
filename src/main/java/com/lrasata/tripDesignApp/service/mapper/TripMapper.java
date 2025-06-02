@@ -1,25 +1,42 @@
 package com.lrasata.tripDesignApp.service.mapper;
 
+import com.lrasata.tripDesignApp.entity.Location;
 import com.lrasata.tripDesignApp.entity.Trip;
 import com.lrasata.tripDesignApp.service.dto.TripDTO;
-import org.mapstruct.*;
+import org.springframework.stereotype.Component;
 
-@Mapper(componentModel = "spring")
-public interface TripMapper {
+@Component
+public class TripMapper {
 
-//    @Mappings({
-//            @Mapping(target = "budget", source = "trip.budget"),
-//            @Mapping(target = "activities", source = "trip.activities"),
-//            // @Mapping(target = "participantIds", expression = "java(trip.getParticipants().stream().map(user -> user.getId()).collect(java.util.stream.Collectors.toList()))")
-//    })
-    TripDTO toDto(Trip trip);
+    public TripDTO toDto(Trip trip) {
+        if (trip == null) return null;
 
-//    @Mappings({
-//            @Mapping(target = "budget", source = "tripDTO.budget"),
-//            @Mapping(target = "activities", ignore = true), // To be handled separately if needed
-//            // @Mapping(target = "participants", ignore = true) // Will be handled separately if needed
-//    })
-    Trip toEntity(TripDTO tripDTO);
+        TripDTO dto = new TripDTO();
+        dto.setId(trip.getId());
+        dto.setName(trip.getName());
+        dto.setDescription(trip.getDescription());
+        dto.setDepartureDate(trip.getDepartureDate());
+        dto.setReturnDate(trip.getReturnDate());
 
+        dto.setDepartureLocation(LocationMapper.toDto(trip.getDepartureLocation()));
+        dto.setArrivalLocation(LocationMapper.toDto(trip.getArrivalLocation()));
+
+        return dto;
+    }
+
+    public Trip toEntity(TripDTO dto, Location departureLocation, Location arrivalLocation) {
+        if (dto == null) return null;
+
+        Trip trip = new Trip();
+        trip.setId(dto.getId());
+        trip.setName(dto.getName());
+        trip.setDescription(dto.getDescription());
+        trip.setDepartureDate(dto.getDepartureDate());
+        trip.setReturnDate(dto.getReturnDate());
+
+        trip.setDepartureLocation(departureLocation);
+        trip.setArrivalLocation(arrivalLocation);
+
+        return trip;
+    }
 }
-

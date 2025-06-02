@@ -3,8 +3,7 @@ package com.lrasata.tripDesignApp.service.dto;
 import jakarta.validation.constraints.NotNull;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDate;
 import java.util.Objects;
 
 @SuppressWarnings("common-java:DuplicatedBlocks")
@@ -13,43 +12,15 @@ public class TripDTO implements Serializable {
 
     @NotNull
     private String name;
-
     private String description;
-
-    private String departureLocation;
-
-    private Date departureDate;
-
-    private String arrivalLocation;
-
-    private Date returnDate;
+    private LocalDate departureDate;
+    private LocalDate returnDate;
+    private LocationDTO departureLocation;
+    private LocationDTO arrivalLocation;
 
 //    private TripBudgetDTO budget;
 //    private List<ActivityDTO> activities;
 //    private List<Long> participantIds;
-
-    // Constructors
-    public TripDTO() {
-    }
-
-    public TripDTO(Long id,
-                   String name,
-                   String description,
-                   String departureLocation,
-                   Date departureDate,
-                   String arrivalLocation,
-                   Date returnDate) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.departureLocation = departureLocation;
-        this.departureDate = departureDate;
-        this.arrivalLocation = arrivalLocation;
-        this.returnDate = returnDate;
-//        this.budget = budget;
-//        this.activities = activities;
-//        this.participantIds = participantIds;
-    }
 
     public Long getId() {
         return id;
@@ -75,61 +46,37 @@ public class TripDTO implements Serializable {
         this.description = description;
     }
 
-    public String getDepartureLocation() {
-        return departureLocation;
-    }
-
-    public void setDepartureLocation(String departureLocation) {
-        this.departureLocation = departureLocation;
-    }
-
-    public Date getDepartureDate() {
+    public LocalDate getDepartureDate() {
         return departureDate;
     }
 
-    public void setDepartureDate(Date departureDate) {
+    public void setDepartureDate(LocalDate departureDate) {
         this.departureDate = departureDate;
     }
 
-    public String getArrivalLocation() {
-        return arrivalLocation;
-    }
-
-    public void setArrivalLocation(String arrivalLocation) {
-        this.arrivalLocation = arrivalLocation;
-    }
-
-    public Date getReturnDate() {
+    public LocalDate getReturnDate() {
         return returnDate;
     }
 
-    public void setReturnDate(Date returnDate) {
+    public void setReturnDate(LocalDate returnDate) {
         this.returnDate = returnDate;
     }
 
-//    public TripBudgetDTO getBudget() {
-//        return budget;
-//    }
-//
-//    public void setBudget(TripBudgetDTO budget) {
-//        this.budget = budget;
-//    }
-//
-//    public List<ActivityDTO> getActivities() {
-//        return activities;
-//    }
-//
-//    public void setActivities(List<ActivityDTO> activities) {
-//        this.activities = activities;
-//    }
-//
-//    public List<Long> getParticipantIds() {
-//        return participantIds;
-//    }
-//
-//    public void setParticipantIds(List<Long> participantIds) {
-//        this.participantIds = participantIds;
-//    }
+    public LocationDTO getDepartureLocation() {
+        return departureLocation;
+    }
+
+    public void setDepartureLocation(LocationDTO departureLocation) {
+        this.departureLocation = departureLocation;
+    }
+
+    public LocationDTO getArrivalLocation() {
+        return arrivalLocation;
+    }
+
+    public void setArrivalLocation(LocationDTO arrivalLocation) {
+        this.arrivalLocation = arrivalLocation;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -143,4 +90,5 @@ public class TripDTO implements Serializable {
     public int hashCode() {
         return Objects.hash(id);
     }
+
 }
