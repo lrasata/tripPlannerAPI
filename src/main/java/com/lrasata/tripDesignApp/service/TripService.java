@@ -1,14 +1,9 @@
 package com.lrasata.tripDesignApp.service;
 
-import com.lrasata.tripDesignApp.entity.Location;
 import com.lrasata.tripDesignApp.entity.Trip;
-import com.lrasata.tripDesignApp.repository.LocationRepository;
 import com.lrasata.tripDesignApp.repository.TripRepository;
-import com.lrasata.tripDesignApp.service.dto.LocationDTO;
 import com.lrasata.tripDesignApp.service.dto.TripDTO;
-import com.lrasata.tripDesignApp.service.mapper.LocationMapper;
 import com.lrasata.tripDesignApp.service.mapper.TripMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -26,14 +21,15 @@ public class TripService {
 
     private static final Logger LOG = LoggerFactory.getLogger(TripService.class);
 
-    @Autowired
-    private TripRepository tripRepository;
+    private final TripRepository tripRepository;
+    private final LocationService locationService;
+    private final TripMapper tripMapper;
 
-    @Autowired
-    private LocationRepository locationRepository;
-
-    @Autowired
-    private TripMapper tripMapper;
+    public TripService(TripRepository tripRepository, LocationService locationService, TripMapper tripMapper) {
+        this.tripRepository = tripRepository;
+        this.locationService = locationService;
+        this.tripMapper = tripMapper;
+    }
 
     public List<TripDTO> findAll() {
         LOG.debug("Request to get all trips");
@@ -61,25 +57,14 @@ public class TripService {
     }
 
     public TripDTO createTrip(TripDTO dto) {
-        // Get or create Departure Location
-        LocationDTO depDto = dto.getDepartureLocation();
-        Location departureLocation = locationRepository
-                .findByCityAndCountryCode(depDto.getCity(), depDto.getCountryCode())
-                .orElseGet(() -> locationRepository.save(LocationMapper.toEntity(depDto)));
+        Trip trip = tripMapper.toEntityWithoutLocations(dto);
 
-        // Get or create Arrival Location
-        LocationDTO arrDto = dto.getArrivalLocation();
-        Location arrivalLocation = locationRepository
-                .findByCityAndCountryCode(arrDto.getCity(), arrDto.getCountryCode())
-                .orElseGet(() -> locationRepository.save(LocationMapper.toEntity(arrDto)));
+        // Manually handle the location mapping to avoid detached issues
+        trip.setDepartureLocation(locationService.findOrCreate(dto.getDepartureLocation()));
+        trip.setArrivalLocation(locationService.findOrCreate(dto.getArrivalLocation()));
 
-        // Map Trip DTO to Entity
-        Trip trip = tripMapper.toEntity(dto, departureLocation, arrivalLocation);
-
-        // Save Trip
         Trip savedTrip = tripRepository.save(trip);
 
-        // Return DTO
         return tripMapper.toDto(savedTrip);
     }
 
@@ -88,22 +73,11 @@ public class TripService {
         LOG.debug("Request to update Trip : {}", dto);
         tripRepository.findById(id).orElseThrow(() -> new RuntimeException("Trip not found"));
 
-        // Get or create Departure Location
-        LocationDTO depDto = dto.getDepartureLocation();
-        Location departureLocation = locationRepository
-                .findByCityAndCountryCode(depDto.getCity(), depDto.getCountryCode())
-                .orElseGet(() -> locationRepository.save(LocationMapper.toEntity(depDto)));
+        Trip trip = tripMapper.toEntityWithoutLocations(dto);
 
-        // Get or create Arrival Location
-        LocationDTO arrDto = dto.getArrivalLocation();
-        Location arrivalLocation = locationRepository
-                .findByCityAndCountryCode(arrDto.getCity(), arrDto.getCountryCode())
-                .orElseGet(() -> locationRepository.save(LocationMapper.toEntity(arrDto)));
+        trip.setDepartureLocation(locationService.findOrCreate(dto.getDepartureLocation()));
+        trip.setArrivalLocation(locationService.findOrCreate(dto.getArrivalLocation()));
 
-        // Map Trip DTO to Entity
-        Trip trip = tripMapper.toEntity(dto, departureLocation, arrivalLocation);
-
-        // Save Trip
         Trip savedTrip = tripRepository.save(trip);
 
         return tripMapper.toDto(savedTrip);
