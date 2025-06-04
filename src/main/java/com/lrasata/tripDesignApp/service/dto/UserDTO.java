@@ -21,7 +21,7 @@ public class UserDTO implements Serializable {
     @Size(min = 5, max = 254)
     private String email;
 
-    private Role role;
+    private Role role; // TODO this should be a Valid Role from enum list - introduce custom @ValidRole annotation
 
     private List<Long> tripIds;
 
