@@ -3,6 +3,7 @@ package com.lrasata.tripDesignApp.service.dto;
 public class LocationDTO {
     private Long id;
     private String city;
+    private String region;
     private String country;
     private String countryCode;
 
@@ -43,6 +44,14 @@ public class LocationDTO {
 
     public void setCountryCode(String countryCode) {
         this.countryCode = countryCode;
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
     }
 }
 
