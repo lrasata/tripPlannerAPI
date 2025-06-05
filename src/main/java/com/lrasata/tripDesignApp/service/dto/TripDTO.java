@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 
 @SuppressWarnings("common-java:DuplicatedBlocks")
@@ -17,10 +18,9 @@ public class TripDTO implements Serializable {
     private LocalDate returnDate;
     private LocationDTO departureLocation;
     private LocationDTO arrivalLocation;
-
+    private List<Long> participantIds;
 //    private TripBudgetDTO budget;
 //    private List<ActivityDTO> activities;
-//    private List<Long> participantIds;
 
     public Long getId() {
         return id;
@@ -91,4 +91,11 @@ public class TripDTO implements Serializable {
         return Objects.hash(id);
     }
 
+    public List<Long> getParticipantIds() {
+        return participantIds;
+    }
+
+    public void setParticipantIds(List<Long> participantIds) {
+        this.participantIds = participantIds;
+    }
 }

@@ -3,6 +3,9 @@ package com.lrasata.tripDesignApp.entity;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Entity
 public class Trip {
@@ -32,8 +35,8 @@ public class Trip {
 //    @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL, orphanRemoval = true)
 //    private List<Activity> activities = new ArrayList<>();
 
-//    @ManyToMany(mappedBy = "trips")
-//    private List<User> participants = new ArrayList<>();
+    @ManyToMany(mappedBy = "trips")
+    private List<User> participants = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -118,21 +121,21 @@ public class Trip {
 //        activity.setTrip(null);
 //    }
 
-//    public List<User> getParticipants() {
-//        return participants;
-//    }
-//
-//    public void setParticipants(List<User> participants) {
-//        this.participants = participants;
-//    }
-//
-//    public void addParticipant(User user) {
-//        participants.add(user);
-//        user.getTrips().add(this);
-//    }
-//
-//    public void removeParticipant(User user) {
-//        participants.remove(user);
-//        user.getTrips().remove(this);
-//    }
+    public List<User> getParticipants() {
+        return participants;
+    }
+
+    public void setParticipants(List<User> participants) {
+        this.participants = participants;
+    }
+
+    public void addParticipant(User user) {
+        participants.add(user);
+        user.getTrips().add(this);
+    }
+
+    public void removeParticipant(User user) {
+        participants.remove(user);
+        user.getTrips().remove(this);
+    }
 }

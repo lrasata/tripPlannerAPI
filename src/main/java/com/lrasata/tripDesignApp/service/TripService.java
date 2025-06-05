@@ -1,7 +1,9 @@
 package com.lrasata.tripDesignApp.service;
 
 import com.lrasata.tripDesignApp.entity.Trip;
+import com.lrasata.tripDesignApp.entity.User;
 import com.lrasata.tripDesignApp.repository.TripRepository;
+import com.lrasata.tripDesignApp.repository.UserRepository;
 import com.lrasata.tripDesignApp.service.dto.TripDTO;
 import com.lrasata.tripDesignApp.service.mapper.TripMapper;
 import org.springframework.data.domain.Pageable;
@@ -23,12 +25,14 @@ public class TripService {
 
     private final TripRepository tripRepository;
     private final LocationService locationService;
+    private final UserRepository userRepository;
     private final TripMapper tripMapper;
 
-    public TripService(TripRepository tripRepository, LocationService locationService, TripMapper tripMapper) {
+    public TripService(TripRepository tripRepository, LocationService locationService, TripMapper tripMapper, UserRepository userRepository) {
         this.tripRepository = tripRepository;
         this.locationService = locationService;
         this.tripMapper = tripMapper;
+        this.userRepository =  userRepository;
     }
 
     public List<TripDTO> findAll() {
@@ -63,6 +67,12 @@ public class TripService {
         trip.setDepartureLocation(locationService.findOrCreate(dto.getDepartureLocation()));
         trip.setArrivalLocation(locationService.findOrCreate(dto.getArrivalLocation()));
 
+        // handle participants
+        List<Optional<User>> users = dto.getParticipantIds().stream().map(userRepository::findById).toList();
+        for (Optional<User> user: users) {
+            user.ifPresent(trip::addParticipant);
+        }
+
         Trip savedTrip = tripRepository.save(trip);
 
         return tripMapper.toDto(savedTrip);
@@ -77,6 +87,12 @@ public class TripService {
 
         trip.setDepartureLocation(locationService.findOrCreate(dto.getDepartureLocation()));
         trip.setArrivalLocation(locationService.findOrCreate(dto.getArrivalLocation()));
+
+        // handle participants
+        List<Optional<User>> users = dto.getParticipantIds().stream().map(userRepository::findById).toList();
+        for (Optional<User> user: users) {
+            user.ifPresent(trip::addParticipant);
+        }
 
         Trip savedTrip = tripRepository.save(trip);
 
