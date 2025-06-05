@@ -8,10 +8,8 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface LocationMapper {
 
-    @Mapping(target = "id", ignore = true)
-    Location toEntity(LocationDTO dto);
+  @Mapping(target = "id", ignore = true)
+  Location toEntity(LocationDTO dto);
 
-    LocationDTO toDto(Location entity);
+  LocationDTO toDto(Location entity);
 }
-
-

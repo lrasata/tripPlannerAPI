@@ -8,17 +8,17 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class LocationService {
-    private final LocationRepository locationRepository;
-    private final LocationMapper locationMapper;
+  private final LocationRepository locationRepository;
+  private final LocationMapper locationMapper;
 
-    public LocationService(LocationRepository locationRepository, LocationMapper locationMapper) {
-        this.locationRepository = locationRepository;
-        this.locationMapper = locationMapper;
-    }
+  public LocationService(LocationRepository locationRepository, LocationMapper locationMapper) {
+    this.locationRepository = locationRepository;
+    this.locationMapper = locationMapper;
+  }
 
-    public Location findOrCreate(LocationDTO dto) {
-        return locationRepository
-                .findByCityAndCountryCode(dto.getCity(), dto.getCountry())
-                .orElseGet(() -> locationRepository.save(locationMapper.toEntity(dto)));
-    }
+  public Location findOrCreate(LocationDTO dto) {
+    return locationRepository
+        .findByCityAndCountryCode(dto.getCity(), dto.getCountry())
+        .orElseGet(() -> locationRepository.save(locationMapper.toEntity(dto)));
+  }
 }

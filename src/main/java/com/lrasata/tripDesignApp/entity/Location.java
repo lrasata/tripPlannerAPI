@@ -8,52 +8,53 @@ import jakarta.persistence.Id;
 @Entity
 public class Location {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String city;
-    private String region;
-    private String country;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    public Long getId() {
-        return id;
-    }
+  private String city;
+  private String region;
+  private String country;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public String getCity() {
-        return city;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public void setCity(String city) {
-        this.city = city;
-    }
+  public String getCity() {
+    return city;
+  }
 
-    public String getCountry() {
-        return country;
-    }
+  public void setCity(String city) {
+    this.city = city;
+  }
 
-    public void setCountry(String country) {
-        this.country = country;
-    }
+  public String getCountry() {
+    return country;
+  }
 
-    private String countryCode;
+  public void setCountry(String country) {
+    this.country = country;
+  }
 
-    public String getCountryCode() {
-        return countryCode;
-    }
+  private String countryCode;
 
-    public void setCountryCode(String countryCode) {
-        this.countryCode = countryCode;
-    }
+  public String getCountryCode() {
+    return countryCode;
+  }
 
-    public String getRegion() {
-        return region;
-    }
+  public void setCountryCode(String countryCode) {
+    this.countryCode = countryCode;
+  }
 
-    public void setRegion(String region) {
-        this.region = region;
-    }
+  public String getRegion() {
+    return region;
+  }
+
+  public void setRegion(String region) {
+    this.region = region;
+  }
 }

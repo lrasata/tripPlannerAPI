@@ -63,6 +63,13 @@ With Maven Wrapper:
 
 Or with IntelliJ (once properly configured).
 
+### Format code
+
+```bash
+mvn spotless:apply    # Formats code
+mvn spotless:check    # Fails build if not formatted
+```
+
 ### Build JAR
 
 ```bash

@@ -7,51 +7,52 @@ import jakarta.persistence.*;
 @DiscriminatorColumn(name = "budget_type", discriminatorType = DiscriminatorType.STRING)
 public class Budget {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private Integer total;
-    private Integer budgetPerPerson;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-//    @OneToOne(mappedBy = "budget")
-//    private Trip trip;
+  private Integer total;
+  private Integer budgetPerPerson;
 
-    @OneToOne(mappedBy = "budget")
-    private Activity activity;
+  //    @OneToOne(mappedBy = "budget")
+  //    private Trip trip;
 
-    public Long getId() {
-        return id;
-    }
+  @OneToOne(mappedBy = "budget")
+  private Activity activity;
 
-    public Integer getBudgetPerPerson() {
-        return budgetPerPerson;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public void setBudgetPerPerson(Integer budgetPerPerson) {
-        this.budgetPerPerson = budgetPerPerson;
-    }
+  public Integer getBudgetPerPerson() {
+    return budgetPerPerson;
+  }
 
-    public Integer getTotal() {
-        return total;
-    }
+  public void setBudgetPerPerson(Integer budgetPerPerson) {
+    this.budgetPerPerson = budgetPerPerson;
+  }
 
-    public void setTotal(Integer total) {
-        this.total = total;
-    }
+  public Integer getTotal() {
+    return total;
+  }
 
-//    public Trip getTrip() {
-//        return trip;
-//    }
-//
-//    public void setTrip(Trip trip) {
-//        this.trip = trip;
-//    }
+  public void setTotal(Integer total) {
+    this.total = total;
+  }
 
-    public Activity getActivity() {
-        return activity;
-    }
+  //    public Trip getTrip() {
+  //        return trip;
+  //    }
+  //
+  //    public void setTrip(Trip trip) {
+  //        this.trip = trip;
+  //    }
 
-    public void setActivity(Activity activity) {
-        this.activity = activity;
-    }
+  public Activity getActivity() {
+    return activity;
+  }
+
+  public void setActivity(Activity activity) {
+    this.activity = activity;
+  }
 }

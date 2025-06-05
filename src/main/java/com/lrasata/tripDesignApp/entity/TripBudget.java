@@ -5,5 +5,4 @@ import jakarta.persistence.Entity;
 
 @Entity
 @DiscriminatorValue("TripBudget")
-public class TripBudget extends Budget {
-}
+public class TripBudget extends Budget {}
