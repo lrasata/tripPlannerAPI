@@ -16,6 +16,7 @@ public class Trip {
   private String description;
   private LocalDate departureDate;
   private LocalDate returnDate;
+  private Integer participantCount;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "departure_location_id")
@@ -135,5 +136,13 @@ public class Trip {
   public void removeParticipant(User user) {
     participants.remove(user);
     user.getTrips().remove(this);
+  }
+
+  public Integer getParticipantCount() {
+    return participantCount;
+  }
+
+  public void setParticipantCount(Integer participantCount) {
+    this.participantCount = participantCount;
   }
 }

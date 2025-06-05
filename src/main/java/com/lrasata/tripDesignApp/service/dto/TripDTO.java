@@ -16,6 +16,7 @@ public class TripDTO implements Serializable {
   private LocalDate returnDate;
   private LocationDTO departureLocation;
   private LocationDTO arrivalLocation;
+  private Integer participantCount;
   private List<Long> participantIds;
 
   //    private TripBudgetDTO budget;
@@ -96,5 +97,13 @@ public class TripDTO implements Serializable {
 
   public void setParticipantIds(List<Long> participantIds) {
     this.participantIds = participantIds;
+  }
+
+  public Integer getParticipantCount() {
+    return participantCount;
+  }
+
+  public void setParticipantCount(Integer participantCount) {
+    this.participantCount = participantCount;
   }
 }

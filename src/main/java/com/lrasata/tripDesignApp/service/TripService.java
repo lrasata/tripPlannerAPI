@@ -71,6 +71,12 @@ public class TripService {
       user.ifPresent(trip::addParticipant);
     }
 
+    // handle participant count
+    Integer count = dto.getParticipantCount();
+    if (count != null && count < users.size()) {
+      trip.setParticipantCount(users.size());
+    }
+
     Trip savedTrip = tripRepository.save(trip);
 
     return tripMapper.toDto(savedTrip);
@@ -80,7 +86,7 @@ public class TripService {
     LOG.debug("Request to update Trip : {}", dto);
     tripRepository.findById(id).orElseThrow(() -> new RuntimeException("Trip not found"));
 
-    Trip trip = tripMapper.toEntityWithoutLocations(dto);
+    Trip trip = tripMapper.toEntityWithoutLocations(dto); // TODO refactor code duplication with create service below
 
     trip.setDepartureLocation(locationService.findOrCreate(dto.getDepartureLocation()));
     trip.setArrivalLocation(locationService.findOrCreate(dto.getArrivalLocation()));
@@ -90,6 +96,12 @@ public class TripService {
         dto.getParticipantIds().stream().map(userRepository::findById).toList();
     for (Optional<User> user : users) {
       user.ifPresent(trip::addParticipant);
+    }
+
+    // handle participant count
+    Integer count = dto.getParticipantCount();
+    if (count != null && count < users.size()) {
+      trip.setParticipantCount(users.size());
     }
 
     Trip savedTrip = tripRepository.save(trip);
