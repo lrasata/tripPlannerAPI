@@ -86,7 +86,9 @@ public class TripService {
     LOG.debug("Request to update Trip : {}", dto);
     tripRepository.findById(id).orElseThrow(() -> new RuntimeException("Trip not found"));
 
-    Trip trip = tripMapper.toEntityWithoutLocations(dto); // TODO refactor code duplication with create service below
+    Trip trip =
+        tripMapper.toEntityWithoutLocations(
+            dto); // TODO refactor code duplication with create service below
 
     trip.setDepartureLocation(locationService.findOrCreate(dto.getDepartureLocation()));
     trip.setArrivalLocation(locationService.findOrCreate(dto.getArrivalLocation()));

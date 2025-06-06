@@ -51,7 +51,7 @@ public class TripController {
 
   @PostMapping
   public ResponseEntity<TripDTO> createTrip(@Valid @RequestBody TripDTO tripDTO) {
-
+    LOG.debug("REST request to create Trip : {}", tripDTO);
     // LOG.debug("REST request to save MobilePlan : {}", mobilePlanDTO);
     if (tripDTO.getId() != null) {
       throw new ResponseStatusException(
