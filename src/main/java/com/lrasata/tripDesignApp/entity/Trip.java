@@ -35,7 +35,7 @@ public class Trip {
   //    @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL, orphanRemoval = true)
   //    private List<Activity> activities = new ArrayList<>();
 
-  @ManyToMany(mappedBy = "trips")
+  @ManyToMany(mappedBy = "trips", fetch = FetchType.LAZY)
   private List<User> participants = new ArrayList<>();
 
   public Long getId() {

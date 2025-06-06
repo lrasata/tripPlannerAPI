@@ -22,7 +22,6 @@ public class UserDTO implements Serializable {
 
   private Role
       role; // TODO this should be a Valid Role from enum list - introduce custom @ValidRole
-  // annotation
 
   private List<Long> tripIds;
 
