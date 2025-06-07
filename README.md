@@ -1,19 +1,19 @@
-# Trip Design App - Restful web API
-> Project under construction
+# Trip Planner API
 
-A Spring Boot application to manage and design travel itineraries.  
+> Status: 🚧 Project under construction
+
+A Spring Boot application designed to manage and design travel itineraries. This RESTful API facilitates trip planning by allowing users to create, read, update, and delete trip information.
 Built with Java 17, Spring Boot, PostgreSQL, and Maven.
 
 ---
 
 ## 🚀 Features
 
-- RESTful API for trip planning and management
-- PostgreSQL database integration
-- JPA with Hibernate
-- Maven build system
-- Profile-based configuration
-
+- RESTful API for trip planning and management 
+- PostgreSQL database integration 
+- Spring Data JPA with Hibernate for ORM 
+- Maven as the build system 
+- Profile-based configuration for different environments
 ---
 
 ## 🧰 Tech Stack
@@ -38,8 +38,8 @@ Built with Java 17, Spring Boot, PostgreSQL, and Maven.
 ### Clone the repository
 
 ```bash
-git clone https://github.com/your-username/trip-design-app.git
-cd trip-design-app
+git clone https://github.com/lrasata/tripPlannerAPI.git
+cd tripPlannerAPI
 ```
 
 ### Configure application
@@ -74,25 +74,9 @@ mvn spotless:check    # Fails build if not formatted
 
 ```bash
 ./mvnw clean package
-java -jar target/tripDesignApp-0.0.1-SNAPSHOT.jar
+java -jar target/tripPlannerAPI-0.0.1-SNAPSHOT.jar
 ```
-
 ---
-
-## 🔌 API Endpoints
-
-Example (update with your real endpoints):
-
-| Method | Endpoint          | Description        |
-|--------|-------------------|--------------------|
-| GET    | `/api/trips`      | List all trips     |
-| POST   | `/api/trips`      | Create a new trip  |
-| GET    | `/api/trips/{id}` | Get trip by ID     |
-| PUT    | `/api/trips/{id}` | Update trip        |
-| DELETE | `/api/trips/{id}` | Delete trip        |
-
----
-
 ## 🧪 Testing
 
 ```bash
@@ -100,6 +84,24 @@ Example (update with your real endpoints):
 ```
 
 ---
+
+## 📁 Project Structure
+- src/main/java: Contains the source code
+  - controller: REST controllers 
+  - service: Business logic 
+  - repository: Data access layers 
+  - model: Entity classes
+- src/main/resources: Configuration files 
+  - application.properties: Application configurations 
+- pom.xml: Maven configuration file
+
+---
+## 📌 Future Enhancements
+- Implement authentication and authorization
+- Add unit and integration tests
+- Integrate Swagger for API documentation
+---
+
 
 ## 📝 License
 
