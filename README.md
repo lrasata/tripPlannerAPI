@@ -5,8 +5,6 @@
 A Spring Boot application designed to manage and design travel itineraries. This RESTful API facilitates trip planning by allowing users to create, read, update, and delete trip information.
 Built with Java 17, Spring Boot, PostgreSQL, and Maven.
 
----
-
 ## 🚀 Features
 
 - RESTful API for trip planning and management 
@@ -14,7 +12,6 @@ Built with Java 17, Spring Boot, PostgreSQL, and Maven.
 - Spring Data JPA with Hibernate for ORM 
 - Maven as the build system 
 - Profile-based configuration for different environments
----
 
 ## 🧰 Tech Stack
 
@@ -24,8 +21,6 @@ Built with Java 17, Spring Boot, PostgreSQL, and Maven.
 - PostgreSQL
 - Maven
 - HikariCP connection pool
-
----
 
 ## 🏗️ Getting Started
 
@@ -83,8 +78,6 @@ java -jar target/tripPlannerAPI-0.0.1-SNAPSHOT.jar
 ./mvnw test
 ```
 
----
-
 ## 📁 Project Structure
 - src/main/java: Contains the source code
   - controller: REST controllers 
@@ -95,12 +88,10 @@ java -jar target/tripPlannerAPI-0.0.1-SNAPSHOT.jar
   - application.properties: Application configurations 
 - pom.xml: Maven configuration file
 
----
 ## 📌 Future Enhancements
 - Implement authentication and authorization
 - Add unit and integration tests
 - Integrate Swagger for API documentation
----
 
 
 ## 📝 License
