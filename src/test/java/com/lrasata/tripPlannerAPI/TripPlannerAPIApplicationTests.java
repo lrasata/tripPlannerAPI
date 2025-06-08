@@ -1,4 +1,4 @@
-package com.lrasata.tripDesignApp;
+package com.lrasata.tripPlannerAPI;
 
 import org.springframework.boot.test.context.SpringBootTest;
 

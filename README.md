@@ -90,7 +90,7 @@ java -jar target/tripPlannerAPI-0.0.1-SNAPSHOT.jar
 
 ## 📌 Future Enhancements
 - Implement authentication and authorization
-- Add unit and integration tests
+- Add unit and integration tests - consider testing with @WebMvcTest + MockMvc (currently using @InjectMocks + Mockito)
 - Integrate Swagger for API documentation
 
 
