@@ -34,7 +34,7 @@ class UserControllerTest {
             createUser(1L, "Alice", "alice@example.com"), createUser(2L, "Bob", "bob@example.com"));
     when(userService.getAllUsers()).thenReturn(users);
 
-    ResponseEntity<List<UserDTO>> response = userController.getAllUsers(null);
+    ResponseEntity<List<UserDTO>> response = userController.getAllUsers(null, null);
 
     assertEquals(2, response.getBody().size());
     assertEquals("Alice", response.getBody().get(0).getName());
@@ -45,7 +45,7 @@ class UserControllerTest {
     List<UserDTO> filtered = List.of(createUser(3L, "Charlie", "charlie@example.com"));
     when(userService.getUsersByEmail("charlie")).thenReturn(filtered);
 
-    ResponseEntity<List<UserDTO>> response = userController.getAllUsers("charlie");
+    ResponseEntity<List<UserDTO>> response = userController.getAllUsers("charlie", null);
 
     assertEquals(1, response.getBody().size());
     assertTrue(response.getBody().get(0).getEmail().contains("charlie"));

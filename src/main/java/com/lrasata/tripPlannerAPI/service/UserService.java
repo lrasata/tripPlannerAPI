@@ -40,6 +40,12 @@ public class UserService {
     return userRepository.findAll().stream().map(userMapper::toDto).collect(Collectors.toList());
   }
 
+  public List<UserDTO> getUsersByIds(List<Long> ids) {
+    return userRepository.findAllById(ids).stream()
+        .map(userMapper::toDto)
+        .collect(Collectors.toList());
+  }
+
   public List<UserDTO> getUsersByEmail(String emailFragment) {
     return userRepository.findByEmailContaining(emailFragment).stream()
         .map(userMapper::toDto)

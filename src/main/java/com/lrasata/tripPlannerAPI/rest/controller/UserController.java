@@ -22,10 +22,16 @@ public class UserController {
 
   @GetMapping
   public ResponseEntity<List<UserDTO>> getAllUsers(
-      @RequestParam(required = false) String emailContains) {
-    LOG.debug("REST request to get all Trips with filter: {}", emailContains);
+      @RequestParam(required = false) String emailContains,
+      @RequestParam(required = false) List<Long> ids) {
+    LOG.debug("REST request to get all Users with filter: {}", emailContains);
     if (emailContains != null && !emailContains.isEmpty()) {
       return ResponseEntity.ok(userService.getUsersByEmail(emailContains));
+    }
+
+    // Accept a comma-separated list of IDs in 'ids' query param
+    if (ids != null && !ids.isEmpty()) {
+      return ResponseEntity.ok(userService.getUsersByIds(ids));
     }
     return ResponseEntity.ok(userService.getAllUsers());
   }
