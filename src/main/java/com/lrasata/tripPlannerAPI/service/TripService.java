@@ -6,7 +6,10 @@ import com.lrasata.tripPlannerAPI.repository.TripRepository;
 import com.lrasata.tripPlannerAPI.repository.UserRepository;
 import com.lrasata.tripPlannerAPI.service.dto.TripDTO;
 import com.lrasata.tripPlannerAPI.service.mapper.TripMapper;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -36,7 +39,6 @@ public class TripService {
   }
 
   public List<TripDTO> findAll() {
-    LOG.debug("Request to get all trips");
     return tripRepository.findAll().stream().map(tripMapper::toDto).collect(Collectors.toList());
   }
 
@@ -53,7 +55,6 @@ public class TripService {
   }
 
   public Optional<TripDTO> findOneById(Long id) {
-    LOG.debug("Request to get Trip : {}", id);
     return tripRepository.findById(id).map(tripMapper::toDto);
   }
 
@@ -83,7 +84,6 @@ public class TripService {
   }
 
   public TripDTO updateTrip(Long id, TripDTO dto) {
-    LOG.debug("Request to update Trip : {}", dto);
     tripRepository.findById(id).orElseThrow(() -> new RuntimeException("Trip not found"));
 
     Trip trip =
@@ -111,7 +111,18 @@ public class TripService {
     return tripMapper.toDto(savedTrip);
   }
 
+  @Transactional
   public void deleteTrip(Long id) {
+    Trip existingTrip =
+        tripRepository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Course not found"));
+
+    for (User user : new HashSet<>(existingTrip.getParticipants())) {
+      user.removeTrip(existingTrip);
+      userRepository.save(user);
+    }
+
     tripRepository.deleteById(id);
   }
 }

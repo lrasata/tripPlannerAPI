@@ -1,10 +1,14 @@
 package com.lrasata.tripPlannerAPI.service;
 
+import com.lrasata.tripPlannerAPI.entity.Trip;
 import com.lrasata.tripPlannerAPI.entity.User;
+import com.lrasata.tripPlannerAPI.repository.TripRepository;
 import com.lrasata.tripPlannerAPI.repository.UserRepository;
 import com.lrasata.tripPlannerAPI.service.dto.UserDTO;
 import com.lrasata.tripPlannerAPI.service.mapper.UserMapper;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -14,10 +18,13 @@ public class UserService {
 
   private final UserRepository userRepository;
   private final UserMapper userMapper;
+  private final TripRepository tripRepository;
 
-  public UserService(UserRepository userRepository, UserMapper userMapper) {
+  public UserService(
+      UserRepository userRepository, UserMapper userMapper, TripRepository tripRepository) {
     this.userRepository = userRepository;
     this.userMapper = userMapper;
+    this.tripRepository = tripRepository;
   }
 
   public UserDTO createUser(UserDTO userDTO) {
@@ -55,10 +62,19 @@ public class UserService {
     return userMapper.toDto(userRepository.save(existingUser));
   }
 
-  public void deleteUser(Long id) {
-    if (!userRepository.existsById(id)) {
-      throw new EntityNotFoundException("User not found with id " + id);
+  @Transactional
+  public void deleteUser(Long userId) {
+    User user =
+        userRepository
+            .findById(userId)
+            .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+    // Clean up associations
+    for (Trip trip : new ArrayList<>(user.getTrips())) {
+      trip.removeParticipant(user);
+      tripRepository.save(trip);
     }
-    userRepository.deleteById(id);
+
+    userRepository.deleteById(userId);
   }
 }

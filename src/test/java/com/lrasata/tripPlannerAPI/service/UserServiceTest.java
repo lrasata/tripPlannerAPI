@@ -3,11 +3,14 @@ package com.lrasata.tripPlannerAPI.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.lrasata.tripPlannerAPI.entity.Trip;
 import com.lrasata.tripPlannerAPI.entity.User;
+import com.lrasata.tripPlannerAPI.repository.TripRepository;
 import com.lrasata.tripPlannerAPI.repository.UserRepository;
 import com.lrasata.tripPlannerAPI.service.dto.UserDTO;
 import com.lrasata.tripPlannerAPI.service.mapper.UserMapper;
 import jakarta.persistence.EntityNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +18,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.*;
 
 class UserServiceTest {
+
+  @Mock private TripRepository tripRepository;
 
   @Mock private UserRepository userRepository;
 
@@ -144,8 +149,11 @@ class UserServiceTest {
 
   @Test
   void deleteUser_whenUserExists_deletesUser() {
-    when(userRepository.existsById(1L)).thenReturn(true);
-    doNothing().when(userRepository).deleteById(1L);
+    User user = new User();
+    user.setId(1L);
+    user.setTrips(new ArrayList<>());
+
+    when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
     userService.deleteUser(1L);
 
@@ -154,8 +162,31 @@ class UserServiceTest {
 
   @Test
   void deleteUser_whenUserDoesNotExist_throwsException() {
-    when(userRepository.existsById(1L)).thenReturn(false);
+    when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
     assertThrows(EntityNotFoundException.class, () -> userService.deleteUser(1L));
+  }
+
+  @Test
+  void deleteUser_deletesUserAndCleansUpAssociations() {
+    // Create mock participant and trip
+    User user = new User();
+    Trip trip = new Trip();
+
+    // Set up bidirectional relationship
+    user.setId(1L);
+    trip.setParticipants(new ArrayList<>(List.of(user)));
+    user.setTrips(new ArrayList<>(List.of(trip)));
+
+    // Mock the repository behavior
+    when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+    when(tripRepository.save(any(Trip.class))).thenReturn(trip);
+
+    userService.deleteUser(1L);
+
+    verify(tripRepository).save(trip);
+
+    // Verify trip was deleted
+    verify(userRepository).deleteById(1L);
   }
 }

@@ -161,10 +161,39 @@ class TripServiceTest {
 
   @Test
   void deleteTrip_deletesTrip() {
-    doNothing().when(tripRepository).deleteById(1L);
+    Trip trip = new Trip();
+    trip.setId(1L);
+    trip.setParticipants(new ArrayList<>());
+
+    when(tripRepository.findById(1L)).thenReturn(Optional.of(trip));
 
     tripService.deleteTrip(1L);
 
+    verify(tripRepository).deleteById(1L);
+  }
+
+  @Test
+  void deleteTrip_deletesTripAndCleansUpAssociations() {
+    // Create mock participant and trip
+    User user = new User();
+    Trip trip = new Trip();
+
+    // Set up bidirectional relationship
+    trip.setId(1L);
+    trip.setParticipants(new ArrayList<>(List.of(user)));
+    user.setTrips(new ArrayList<>(List.of(trip)));
+
+    // Mock the repository behavior
+    when(tripRepository.findById(1L)).thenReturn(Optional.of(trip));
+    when(userRepository.save(any(User.class))).thenReturn(user);
+
+    // Call the service method
+    tripService.deleteTrip(1L);
+
+    // Verify that participant's trips were modified and saved
+    verify(userRepository).save(user);
+
+    // Verify trip was deleted
     verify(tripRepository).deleteById(1L);
   }
 }
