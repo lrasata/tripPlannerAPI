@@ -3,6 +3,8 @@ package com.lrasata.tripPlannerAPI.service.dto;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 
@@ -92,11 +94,11 @@ public class TripDTO implements Serializable {
   }
 
   public List<Long> getParticipantIds() {
-    return participantIds;
+    return participantIds.stream().distinct().toList();
   }
 
   public void setParticipantIds(List<Long> participantIds) {
-    this.participantIds = participantIds;
+    this.participantIds = new ArrayList<>(new LinkedHashSet<>(participantIds));
   }
 
   public Integer getParticipantCount() {

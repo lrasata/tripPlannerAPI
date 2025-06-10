@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface TripMapper {
@@ -27,4 +28,10 @@ public interface TripMapper {
   @Mapping(target = "arrivalLocation", ignore = true)
   @Mapping(target = "participants", ignore = true)
   Trip toEntityWithoutLocations(TripDTO dto);
+
+  @Mapping(target = "id", ignore = true) // Don't update the ID when updating
+  @Mapping(target = "departureLocation", ignore = true)
+  @Mapping(target = "arrivalLocation", ignore = true)
+  @Mapping(target = "participants", ignore = true)
+  void updateTripFromDto(TripDTO dto, @MappingTarget Trip entity);
 }

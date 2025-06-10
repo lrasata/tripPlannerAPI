@@ -130,7 +130,6 @@ class TripServiceTest {
   void updateTrip_updatesTripAndReturnsDto() {
     TripDTO inputDTO = createTripDTO(33L);
     Trip existingTrip = createTrip(33L);
-    Trip mappedTrip = new Trip();
     Location depLoc = new Location();
     Location arrLoc = new Location();
     User user1 = new User();
@@ -139,17 +138,49 @@ class TripServiceTest {
     TripDTO resultDTO = createTripDTO(33L);
 
     when(tripRepository.findById(33L)).thenReturn(Optional.of(existingTrip));
-    when(tripMapper.toEntityWithoutLocations(inputDTO)).thenReturn(mappedTrip);
     when(locationService.findOrCreate(any())).thenReturn(depLoc).thenReturn(arrLoc);
     when(userRepository.findById(1L)).thenReturn(Optional.of(user1));
-    when(userRepository.findById(2L)).thenReturn(Optional.empty()); // simulate one missing user
-    when(tripRepository.save(mappedTrip)).thenReturn(savedTrip);
+    when(tripRepository.save(existingTrip)).thenReturn(savedTrip);
     when(tripMapper.toDto(savedTrip)).thenReturn(resultDTO);
 
     TripDTO result = tripService.updateTrip(33L, inputDTO);
 
     assertEquals(33L, result.getId());
-    verify(tripRepository).save(mappedTrip);
+    verify(tripRepository).save(existingTrip);
+  }
+
+  @Test
+  void updateTrip_updatesTripWithNewUsersAndReturnsDto() {
+    TripDTO inputDTO = createTripDTO(33L);
+    List<Long> userIds = new ArrayList<>();
+    userIds.add(1L);
+    userIds.add(2L);
+    inputDTO.setParticipantIds(userIds);
+
+    Trip existingTrip = createTrip(33L);
+    Location depLoc = new Location();
+    Location arrLoc = new Location();
+    User user1 = new User();
+    user1.setId(1L);
+    User user2 = new User();
+    user2.setId(2L);
+
+    Trip savedTrip = createTrip(33L);
+    TripDTO resultDTO = createTripDTO(33L);
+
+    when(tripRepository.findById(33L)).thenReturn(Optional.of(existingTrip));
+    when(locationService.findOrCreate(any())).thenReturn(depLoc).thenReturn(arrLoc);
+    when(userRepository.findById(1L)).thenReturn(Optional.of(user1));
+    when(userRepository.findById(2L)).thenReturn(Optional.of(user2));
+
+    when(tripRepository.save(existingTrip)).thenReturn(savedTrip);
+    when(tripMapper.toDto(savedTrip)).thenReturn(resultDTO);
+
+    TripDTO result = tripService.updateTrip(33L, inputDTO);
+
+    assertEquals(33L, result.getId());
+    assertEquals(2, result.getParticipantIds().size());
+    verify(tripRepository).save(existingTrip);
   }
 
   @Test

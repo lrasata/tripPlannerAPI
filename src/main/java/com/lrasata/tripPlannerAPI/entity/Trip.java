@@ -35,7 +35,13 @@ public class Trip {
   //    @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL, orphanRemoval = true)
   //    private List<Activity> activities = new ArrayList<>();
 
-  @ManyToMany(mappedBy = "trips", fetch = FetchType.LAZY)
+  @ManyToMany(
+      fetch = FetchType.LAZY,
+      cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+  @JoinTable(
+      name = "trip_users",
+      joinColumns = @JoinColumn(name = "trip_id"),
+      inverseJoinColumns = @JoinColumn(name = "user_id"))
   private List<User> participants = new ArrayList<>();
 
   public Long getId() {
@@ -125,7 +131,11 @@ public class Trip {
   }
 
   public void setParticipants(List<User> participants) {
-    this.participants = participants;
+    this.participants
+        .clear(); // IMPORTANT: Clear existing participants to handle removals correctly
+    if (participants != null) {
+      this.participants.addAll(participants);
+    }
   }
 
   public void addParticipant(User user) {

@@ -84,29 +84,30 @@ public class TripService {
   }
 
   public TripDTO updateTrip(Long id, TripDTO dto) {
-    tripRepository.findById(id).orElseThrow(() -> new RuntimeException("Trip not found"));
+    Trip existingTrip =
+        tripRepository.findById(id).orElseThrow(() -> new RuntimeException("Trip not found"));
 
-    Trip trip =
-        tripMapper.toEntityWithoutLocations(
-            dto); // TODO refactor code duplication with create service below
+    tripMapper.updateTripFromDto(dto, existingTrip);
 
-    trip.setDepartureLocation(locationService.findOrCreate(dto.getDepartureLocation()));
-    trip.setArrivalLocation(locationService.findOrCreate(dto.getArrivalLocation()));
+    existingTrip.setDepartureLocation(locationService.findOrCreate(dto.getDepartureLocation()));
+    existingTrip.setArrivalLocation(locationService.findOrCreate(dto.getArrivalLocation()));
 
     // handle participants
-    List<Optional<User>> users =
-        dto.getParticipantIds().stream().map(userRepository::findById).toList();
-    for (Optional<User> user : users) {
-      user.ifPresent(trip::addParticipant);
-    }
+    List<User> users =
+        dto.getParticipantIds().stream()
+            .map(userRepository::findById)
+            .filter(Optional::isPresent) // Filter out users not found
+            .map(Optional::get) // Extract the User object
+            .collect(Collectors.toList());
+    existingTrip.setParticipants(users);
 
     // handle participant count
     Integer count = dto.getParticipantCount();
-    if (count != null && count < users.size()) {
-      trip.setParticipantCount(users.size());
+    if (count == null || count < users.size()) {
+      existingTrip.setParticipantCount(users.size());
     }
 
-    Trip savedTrip = tripRepository.save(trip);
+    Trip savedTrip = tripRepository.save(existingTrip);
 
     return tripMapper.toDto(savedTrip);
   }
