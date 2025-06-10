@@ -61,9 +61,12 @@ public class TripService {
   public TripDTO createTrip(TripDTO dto) {
     Trip trip = tripMapper.toEntityWithoutLocations(dto);
 
-    // Manually handle the location mapping to avoid detached issues
-    trip.setDepartureLocation(locationService.findOrCreate(dto.getDepartureLocation()));
-    trip.setArrivalLocation(locationService.findOrCreate(dto.getArrivalLocation()));
+    if (dto.getDepartureLocation() != null) {
+      trip.setDepartureLocation(locationService.findOrCreate(dto.getDepartureLocation()));
+    }
+    if (dto.getArrivalLocation() != null) {
+      trip.setArrivalLocation(locationService.findOrCreate(dto.getArrivalLocation()));
+    }
 
     // handle participants
     List<Optional<User>> users =
@@ -89,8 +92,12 @@ public class TripService {
 
     tripMapper.updateTripFromDto(dto, existingTrip);
 
-    existingTrip.setDepartureLocation(locationService.findOrCreate(dto.getDepartureLocation()));
-    existingTrip.setArrivalLocation(locationService.findOrCreate(dto.getArrivalLocation()));
+    if (dto.getDepartureLocation() != null) {
+      existingTrip.setDepartureLocation(locationService.findOrCreate(dto.getDepartureLocation()));
+    }
+    if (dto.getArrivalLocation() != null) {
+      existingTrip.setArrivalLocation(locationService.findOrCreate(dto.getArrivalLocation()));
+    }
 
     // handle participants
     List<User> users =
