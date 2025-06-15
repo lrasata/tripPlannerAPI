@@ -1,13 +1,20 @@
 package com.lrasata.tripPlannerAPI.rest.controller;
 
+import com.lrasata.tripPlannerAPI.entity.User;
 import com.lrasata.tripPlannerAPI.service.UserService;
 import com.lrasata.tripPlannerAPI.service.dto.UserDTO;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/users")
@@ -18,6 +25,21 @@ public class UserController {
 
   public UserController(UserService userService) {
     this.userService = userService;
+  }
+
+  @GetMapping("/me")
+  public ResponseEntity<UserDTO> authenticatedUser() {
+    LOG.debug("REST request to get current user");
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+    if (authentication == null
+        || !authentication.isAuthenticated()
+        || authentication.getPrincipal().equals("anonymousUser")) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    User currentUser = (User) authentication.getPrincipal();
+    return ResponseEntity.ok(userService.getUserById(currentUser.getId()));
   }
 
   @GetMapping

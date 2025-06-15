@@ -35,7 +35,7 @@ class UserServiceTest {
   private UserDTO createUserDTO(Long id, String email) {
     UserDTO dto = new UserDTO();
     dto.setId(id);
-    dto.setName("John Doe");
+    dto.setFullName("John Doe");
     dto.setEmail(email);
     return dto;
   }
@@ -43,7 +43,7 @@ class UserServiceTest {
   private User createUser(Long id, String email) {
     User user = new User();
     user.setId(id);
-    user.setName("John Doe");
+    user.setFullName("John Doe");
     user.setEmail(email);
     return user;
   }

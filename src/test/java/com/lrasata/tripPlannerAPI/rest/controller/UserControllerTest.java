@@ -37,7 +37,7 @@ class UserControllerTest {
     ResponseEntity<List<UserDTO>> response = userController.getAllUsers(null, null);
 
     assertEquals(2, response.getBody().size());
-    assertEquals("Alice", response.getBody().get(0).getName());
+    assertEquals("Alice", response.getBody().get(0).getFullName());
   }
 
   @Test
@@ -58,7 +58,7 @@ class UserControllerTest {
 
     ResponseEntity<UserDTO> response = userController.getUserById(4L);
 
-    assertEquals("Diana", response.getBody().getName());
+    assertEquals("Diana", response.getBody().getFullName());
     assertEquals(Role.PARTICIPANT, response.getBody().getRole());
   }
 
@@ -72,7 +72,7 @@ class UserControllerTest {
     ResponseEntity<UserDTO> response = userController.createUser(toCreate);
 
     assertEquals(5L, response.getBody().getId());
-    assertEquals("Eve", response.getBody().getName());
+    assertEquals("Eve", response.getBody().getFullName());
   }
 
   @Test
@@ -82,7 +82,7 @@ class UserControllerTest {
 
     ResponseEntity<UserDTO> response = userController.updateUser(6L, updated);
 
-    assertEquals("Frank", response.getBody().getName());
+    assertEquals("Frank", response.getBody().getFullName());
     assertEquals("frank@example.com", response.getBody().getEmail());
   }
 

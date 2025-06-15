@@ -16,7 +16,7 @@ class UserMapperTest {
   void toEntity_shouldMapAllFields() {
     UserDTO dto = new UserDTO();
     dto.setId(1L);
-    dto.setName("Alice");
+    dto.setFullName("Alice");
     dto.setEmail("alice@example.com");
     dto.setRole(Role.PARTICIPANT);
     dto.setTripIds(null);
@@ -25,7 +25,7 @@ class UserMapperTest {
 
     assertNotNull(user);
     assertEquals(dto.getId(), user.getId());
-    assertEquals(dto.getName(), user.getName());
+    assertEquals(dto.getFullName(), user.getFullName());
     assertEquals(dto.getEmail(), user.getEmail());
     assertEquals(dto.getRole(), user.getRole());
   }
@@ -34,7 +34,7 @@ class UserMapperTest {
   void toDto_shouldMapAllFields() {
     User user = new User();
     user.setId(2L);
-    user.setName("Bob");
+    user.setFullName("Bob");
     user.setEmail("bob@example.com");
     user.setRole(Role.ADMIN);
 
@@ -42,7 +42,7 @@ class UserMapperTest {
 
     assertNotNull(dto);
     assertEquals(user.getId(), dto.getId());
-    assertEquals(user.getName(), dto.getName());
+    assertEquals(user.getFullName(), dto.getFullName());
     assertEquals(user.getEmail(), dto.getEmail());
     assertEquals(user.getRole(), dto.getRole());
   }
@@ -51,18 +51,18 @@ class UserMapperTest {
   void updateEntityFromDto_shouldUpdateFields() {
     User user = new User();
     user.setId(3L);
-    user.setName("Charlie");
+    user.setFullName("Charlie");
     user.setEmail("charlie@example.com");
     user.setRole(Role.PARTICIPANT);
 
     UserDTO dto = new UserDTO();
-    dto.setName("Charles");
+    dto.setFullName("Charles");
     dto.setEmail("charles@example.com");
     dto.setRole(Role.ADMIN);
 
     userMapper.updateEntityFromDto(dto, user);
 
-    assertEquals("Charles", user.getName());
+    assertEquals("Charles", user.getFullName());
     assertEquals("charles@example.com", user.getEmail());
     assertEquals(Role.ADMIN, user.getRole());
     assertEquals(3L, user.getId()); // Id remains unchanged
