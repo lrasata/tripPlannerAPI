@@ -25,8 +25,7 @@ public class UserDTO implements Serializable {
       flags = {Pattern.Flag.CASE_INSENSITIVE})
   private String email;
 
-  private Role
-      role; // TODO this should be a Valid Role from enum list - introduce custom @ValidRole
+  private Role role;
 
   private List<Long> tripIds;
 
@@ -64,19 +63,19 @@ public class UserDTO implements Serializable {
     this.email = email;
   }
 
-  public Role getRole() {
-    return role;
-  }
-
-  public void setRole(Role role) {
-    this.role = role;
-  }
-
   public List<Long> getTripIds() {
     return tripIds;
   }
 
   public void setTripIds(List<Long> tripIds) {
     this.tripIds = tripIds;
+  }
+
+  public Role getRole() {
+    return role;
+  }
+
+  public void setRole(Role role) {
+    this.role = role;
   }
 }

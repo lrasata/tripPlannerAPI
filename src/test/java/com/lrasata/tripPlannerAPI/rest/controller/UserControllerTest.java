@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import com.lrasata.tripPlannerAPI.entity.Role;
+import com.lrasata.tripPlannerAPI.entity.RoleEnum;
 import com.lrasata.tripPlannerAPI.service.UserService;
 import com.lrasata.tripPlannerAPI.service.dto.UserDTO;
 import java.util.List;
@@ -24,7 +25,7 @@ class UserControllerTest {
   }
 
   private UserDTO createUser(Long id, String name, String email) {
-    return new UserDTO(id, name, email, Role.PARTICIPANT, List.of(101L, 102L));
+    return new UserDTO(id, name, email, new Role(), List.of(101L, 102L));
   }
 
   @Test
@@ -59,7 +60,7 @@ class UserControllerTest {
     ResponseEntity<UserDTO> response = userController.getUserById(4L);
 
     assertEquals("Diana", response.getBody().getFullName());
-    assertEquals(Role.PARTICIPANT, response.getBody().getRole());
+    assertEquals(RoleEnum.ROLE_PARTICIPANT, response.getBody().getRole());
   }
 
   @Test

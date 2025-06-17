@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 public class TripPlannerAPIProperties {
   private String allowedOrigin;
 
-  // Getters and setters
   public String getAllowedOrigin() {
     return allowedOrigin;
   }

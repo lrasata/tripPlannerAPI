@@ -9,6 +9,7 @@ import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
@@ -30,7 +31,8 @@ public class User implements UserDetails {
   @Column(nullable = false)
   private String password;
 
-  @Enumerated(EnumType.STRING)
+  @ManyToOne(cascade = CascadeType.REMOVE)
+  @JoinColumn(name = "role_id", referencedColumnName = "id", nullable = false)
   private Role role;
 
   @CreationTimestamp
@@ -90,17 +92,11 @@ public class User implements UserDetails {
     trip.getParticipants().remove(this);
   }
 
-  public Role getRole() {
-    return role;
-  }
-
-  public void setRole(Role role) {
-    this.role = role;
-  }
-
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return List.of();
+    SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.getName().toString());
+
+    return List.of(authority);
   }
 
   @Override
@@ -154,5 +150,13 @@ public class User implements UserDetails {
 
   public void setUpdatedAt(Date updatedAt) {
     this.updatedAt = updatedAt;
+  }
+
+  public Role getRole() {
+    return role;
+  }
+
+  public void setRole(Role role) {
+    this.role = role;
   }
 }

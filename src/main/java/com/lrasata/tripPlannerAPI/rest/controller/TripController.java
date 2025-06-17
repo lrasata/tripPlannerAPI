@@ -10,7 +10,6 @@ import java.util.Objects;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,9 +20,14 @@ import org.springframework.web.server.ResponseStatusException;
 public class TripController {
   private static final Logger LOG = LoggerFactory.getLogger(TripController.class);
 
-  @Autowired private TripService tripService;
+  private final TripService tripService;
 
-  @Autowired private TripRepository tripRepository;
+  private final TripRepository tripRepository;
+
+  public TripController(TripService tripService, TripRepository tripRepository) {
+    this.tripService = tripService;
+    this.tripRepository = tripRepository;
+  }
 
   @GetMapping
   public ResponseEntity<List<TripDTO>> getAllTrips(
@@ -52,7 +56,7 @@ public class TripController {
   @PostMapping
   public ResponseEntity<TripDTO> createTrip(@Valid @RequestBody TripDTO tripDTO) {
     LOG.debug("REST request to create Trip : {}", tripDTO);
-    // LOG.debug("REST request to save MobilePlan : {}", mobilePlanDTO);
+
     if (tripDTO.getId() != null) {
       throw new ResponseStatusException(
           HttpStatus.BAD_REQUEST, "A new trip cannot already have an ID");

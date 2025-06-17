@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,7 @@ public class UserController {
   }
 
   @GetMapping("/me")
+  @PreAuthorize("isAuthenticated()")
   public ResponseEntity<UserDTO> authenticatedUser() {
     LOG.debug("REST request to get current user");
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -43,6 +45,7 @@ public class UserController {
   }
 
   @GetMapping
+  @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
   public ResponseEntity<List<UserDTO>> getAllUsers(
       @RequestParam(required = false) String emailContains,
       @RequestParam(required = false) List<Long> ids) {

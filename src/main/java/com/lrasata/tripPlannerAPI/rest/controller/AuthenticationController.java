@@ -3,9 +3,11 @@ package com.lrasata.tripPlannerAPI.rest.controller;
 import com.lrasata.tripPlannerAPI.entity.User;
 import com.lrasata.tripPlannerAPI.rest.response.LoginResponse;
 import com.lrasata.tripPlannerAPI.service.AuthenticationService;
-import com.lrasata.tripPlannerAPI.service.JwtService;
 import com.lrasata.tripPlannerAPI.service.dto.LoginUserDTO;
 import com.lrasata.tripPlannerAPI.service.dto.RegisterUserDTO;
+import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,18 +17,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 @RestController
 public class AuthenticationController {
-  private final JwtService jwtService;
+  private static final Logger LOG = LoggerFactory.getLogger(AuthenticationController.class);
 
   private final AuthenticationService authenticationService;
 
-  public AuthenticationController(
-      JwtService jwtService, AuthenticationService authenticationService) {
-    this.jwtService = jwtService;
+  public AuthenticationController(AuthenticationService authenticationService) {
     this.authenticationService = authenticationService;
   }
 
   @PostMapping("/signup")
   public ResponseEntity<User> register(@RequestBody RegisterUserDTO registerUserDto) {
+    LOG.debug("REST request to signup : {}", registerUserDto.getEmail());
+
     User registeredUser = authenticationService.signup(registerUserDto);
 
     return ResponseEntity.ok(registeredUser);
@@ -34,14 +36,26 @@ public class AuthenticationController {
 
   @PostMapping("/login")
   public ResponseEntity<LoginResponse> authenticate(@RequestBody LoginUserDTO loginUserDto) {
-    User authenticatedUser = authenticationService.authenticate(loginUserDto);
+    LOG.debug("REST request to login : {}", loginUserDto.getEmail());
 
-    String jwtToken = jwtService.generateToken(authenticatedUser);
+    return ResponseEntity.ok(authenticationService.login(loginUserDto));
+  }
 
-    LoginResponse loginResponse = new LoginResponse();
-    loginResponse.setToken(jwtToken);
-    loginResponse.setExpiresIn(jwtService.getExpirationTime());
+  @PostMapping("/refresh-token")
+  public ResponseEntity<?> refresh(@RequestBody Map<String, String> payload) {
+    LOG.debug("REST request to refresh token");
 
-    return ResponseEntity.ok(loginResponse);
+    String refreshToken = payload.get("refreshToken");
+    return ResponseEntity.ok(
+        Map.of("accessToken", authenticationService.refreshAccessToken(refreshToken)));
+  }
+
+  @PostMapping("/logout")
+  public ResponseEntity<?> logout(@RequestBody Map<String, String> payload) {
+    LOG.debug("REST request to logout");
+
+    String refreshToken = payload.get("refreshToken");
+    authenticationService.logout(refreshToken);
+    return ResponseEntity.ok("Logged out");
   }
 }
