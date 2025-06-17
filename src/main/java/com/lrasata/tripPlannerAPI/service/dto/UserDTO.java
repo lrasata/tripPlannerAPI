@@ -3,6 +3,7 @@ package com.lrasata.tripPlannerAPI.service.dto;
 import com.lrasata.tripPlannerAPI.entity.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.List;
@@ -12,12 +13,16 @@ public class UserDTO implements Serializable {
   private Long id;
 
   @NotNull
-  @Size(max = 50)
+  @Size(
+      min = 2,
+      max = 100,
+      message = "The length of full name must be between 2 and 100 characters.")
   private String fullName;
 
   @NotNull
-  @Email
-  @Size(min = 5, max = 254)
+  @Email(
+      message = "The email address is invalid.",
+      flags = {Pattern.Flag.CASE_INSENSITIVE})
   private String email;
 
   private Role
