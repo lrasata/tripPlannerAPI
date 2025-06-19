@@ -1,6 +1,5 @@
 package com.lrasata.tripPlannerAPI.service.dto;
 
-import com.lrasata.tripPlannerAPI.entity.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -25,13 +24,13 @@ public class UserDTO implements Serializable {
       flags = {Pattern.Flag.CASE_INSENSITIVE})
   private String email;
 
-  private Role role;
+  private RoleDTO role;
 
   private List<Long> tripIds;
 
   public UserDTO() {}
 
-  public UserDTO(Long id, String fullName, String email, Role role, List<Long> tripIds) {
+  public UserDTO(Long id, String fullName, String email, RoleDTO role, List<Long> tripIds) {
     this.id = id;
     this.fullName = fullName;
     this.email = email;
@@ -71,11 +70,11 @@ public class UserDTO implements Serializable {
     this.tripIds = tripIds;
   }
 
-  public Role getRole() {
+  public RoleDTO getRole() {
     return role;
   }
 
-  public void setRole(Role role) {
+  public void setRole(RoleDTO role) {
     this.role = role;
   }
 }

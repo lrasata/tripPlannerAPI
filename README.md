@@ -13,6 +13,18 @@ Built with Java 17, Spring Boot, PostgreSQL, and Maven.
 - Maven as the build system 
 - Profile-based configuration for different environments
 
+## 📌 Future enhancements and features
+
+- ~~Integrate Swagger for API documentation~~
+- Implement authentication and authorization
+  - ~~implement Spring security to handle authentication and authorisation~~
+  - for sign up workflow, integrate email validation
+  - implement Two-Factor Authentication
+- User story : User is able to manage activities for a trip
+- User story : User is able to manage trip budget
+- Add unit and integration tests - consider testing with @WebMvcTest + MockMvc (currently using @InjectMocks + Mockito)
+
+
 ## 🧰 Tech Stack
 
 - Java 17
@@ -115,11 +127,6 @@ java -jar target/tripPlannerAPI-0.0.1-SNAPSHOT.jar
 - src/main/resources: Configuration files 
   - application.properties: Application configurations 
 - pom.xml: Maven configuration file
-
-## 📌 Future Enhancements
-- Implement authentication and authorization
-- Add unit and integration tests - consider testing with @WebMvcTest + MockMvc (currently using @InjectMocks + Mockito)
-- ~~Integrate Swagger for API documentation~~
 
 
 ## 📝 License

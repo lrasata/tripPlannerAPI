@@ -3,8 +3,8 @@ package com.lrasata.tripPlannerAPI.rest.controller;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.lrasata.tripPlannerAPI.entity.Role;
 import com.lrasata.tripPlannerAPI.service.UserService;
+import com.lrasata.tripPlannerAPI.service.dto.RoleDTO;
 import com.lrasata.tripPlannerAPI.service.dto.UserDTO;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +24,7 @@ class UserControllerTest {
   }
 
   private UserDTO createUser(Long id, String name, String email) {
-    return new UserDTO(id, name, email, new Role(), List.of(101L, 102L));
+    return new UserDTO(id, name, email, new RoleDTO(), List.of(101L, 102L));
   }
 
   @Test
