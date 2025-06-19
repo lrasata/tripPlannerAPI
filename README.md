@@ -41,12 +41,39 @@ cd tripPlannerAPI
 
 Edit `src/main/resources/application.properties`:
 
+#### Database properties
 ```properties
 spring.datasource.url=jdbc:postgresql://localhost:5432/<database-name>
 spring.datasource.username=<username>
 spring.datasource.password=<password>
 spring.jpa.hibernate.ddl-auto=update
 ```
+
+#### Security properties
+```properties
+security.jwt.secret-key=
+# access token expiration time: 15 min in millisecond
+security.jwt.access-token.expiration=900000
+# refresh token expiration time: 60 min in millisecond
+security.jwt.refresh-token.expiration=3600000
+```
+
+#### Application properties
+```properties
+# allowed origin : domain that is explicitly permitted to access resources  in the context of Cross-Origin Resource Sharing (CORS)
+trip-design-app.allowed-origin=
+
+# fullname, email and password of boostraped SuperAdmin user when app starts
+trip-design-app.super-admin.fullname=
+trip-design-app.super-admin.email=
+trip-design-app.super-admin.password=
+```
+
+#### Logging level
+```
+logging.level.com.lrasata.tripPlannerAPI=
+```
+
 
 ### Run the application
 
