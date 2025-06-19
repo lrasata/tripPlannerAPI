@@ -62,18 +62,21 @@ public class UserController {
   }
 
   @GetMapping("/{id}")
+  @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
   public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
     LOG.debug("REST request to get User : {}", id);
     return ResponseEntity.ok(userService.getUserById(id));
   }
 
   @PostMapping
+  @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
   public ResponseEntity<UserDTO> createUser(@Valid @RequestBody UserDTO userDTO) {
     LOG.debug("REST request to create User : {}", userDTO);
     return ResponseEntity.ok(userService.createUser(userDTO));
   }
 
   @PutMapping("/{id}")
+  @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
   public ResponseEntity<UserDTO> updateUser(
       @PathVariable Long id, @Valid @RequestBody UserDTO userDTO) {
     LOG.debug("REST request to update User : {}, {}", id, userDTO);
@@ -81,6 +84,7 @@ public class UserController {
   }
 
   @DeleteMapping("/{id}")
+  @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
   public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
     LOG.debug("REST request to delete User : {}", id);
     userService.deleteUser(id);

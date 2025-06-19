@@ -6,8 +6,10 @@ import com.lrasata.tripPlannerAPI.service.AuthenticationService;
 import com.lrasata.tripPlannerAPI.service.dto.LoginUserDTO;
 import com.lrasata.tripPlannerAPI.service.dto.RegisterUserDTO;
 import java.util.Map;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,12 +28,16 @@ public class AuthenticationController {
   }
 
   @PostMapping("/signup")
-  public ResponseEntity<User> register(@RequestBody RegisterUserDTO registerUserDto) {
+  public ResponseEntity<?> register(@RequestBody RegisterUserDTO registerUserDto) {
     LOG.debug("REST request to signup : {}", registerUserDto.getEmail());
 
-    User registeredUser = authenticationService.signup(registerUserDto);
+    Optional<User> registeredUser = authenticationService.signup(registerUserDto);
 
-    return ResponseEntity.ok(registeredUser);
+    if (registeredUser.isPresent()) {
+      return ResponseEntity.ok(registeredUser.get());
+    } else {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User could not be created");
+    }
   }
 
   @PostMapping("/login")

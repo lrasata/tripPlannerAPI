@@ -53,20 +53,24 @@ public class AuthenticationService {
     this.jwtService = jwtService;
   }
 
-  public User signup(RegisterUserDTO input) {
+  public Optional<User> signup(RegisterUserDTO registerUserDTO) {
+    if (userRepository.existsByEmail(registerUserDTO.getEmail())) {
+      return Optional.empty();
+    }
+
     Optional<Role> optionalRole = roleRepository.findByName(RoleEnum.ROLE_PARTICIPANT);
     if (optionalRole.isEmpty()) {
-      return null;
+      return Optional.empty();
     }
 
     User user = new User();
 
-    user.setFullName(input.getFullName());
-    user.setEmail(input.getEmail());
-    user.setPassword(passwordEncoder.encode(input.getPassword()));
+    user.setFullName(registerUserDTO.getFullName());
+    user.setEmail(registerUserDTO.getEmail());
+    user.setPassword(passwordEncoder.encode(registerUserDTO.getPassword()));
     user.setRole(optionalRole.get());
 
-    return userRepository.save(user);
+    return Optional.of(userRepository.save(user));
   }
 
   public User authenticate(LoginUserDTO loginUserDTO) {
