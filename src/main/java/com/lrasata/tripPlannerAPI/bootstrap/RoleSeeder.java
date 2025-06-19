@@ -46,12 +46,12 @@ public class RoleSeeder implements ApplicationListener<ContextRefreshedEvent> {
                     roleToCreate.setName(roleName);
                     roleToCreate.setDescription(roleDescriptionMap.get(roleName));
 
-                      try {
-                          roleRepository.save(roleToCreate);
-                          LOG.info("Created new role '{}'", roleName);
-                      } catch (Exception e) {
-                          LOG.error("Failed to create role '{}': {}", roleName, e.getMessage());
-                      }
+                    try {
+                      roleRepository.save(roleToCreate);
+                      LOG.info("Created new role '{}'", roleName);
+                    } catch (Exception e) {
+                      LOG.error("Failed to create role '{}': {}", roleName, e.getMessage());
+                    }
                   });
             });
   }

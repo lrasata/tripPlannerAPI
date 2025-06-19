@@ -83,7 +83,8 @@ With Maven Wrapper:
 ./mvnw spring-boot:run
 ```
 
-Or with IntelliJ (once properly configured).
+#### Access Swagger UI
+Open http://localhost:8080/swagger-ui/index.html in your browser to explore and test the API endpoints.
 
 ### Format code
 
