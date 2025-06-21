@@ -56,7 +56,7 @@ class UserServiceTest {
     UserDTO savedDto = createUserDTO(1L, "john@example.com");
 
     when(userRepository.existsByEmail(dto.getEmail())).thenReturn(false);
-    when(userMapper.toEntity(dto)).thenReturn(user);
+    when(userMapper.toEntityWithoutTrips(dto)).thenReturn(user);
     when(userRepository.save(user)).thenReturn(savedUser);
     when(userMapper.toDto(savedUser)).thenReturn(savedDto);
 

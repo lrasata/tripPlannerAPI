@@ -43,11 +43,7 @@ public class User implements UserDetails {
   @Column(name = "updated_at")
   private Date updatedAt;
 
-  @ManyToMany
-  @JoinTable(
-      name = "user_trip",
-      joinColumns = @JoinColumn(name = "user_id"),
-      inverseJoinColumns = @JoinColumn(name = "trip_id"))
+  @ManyToMany(mappedBy = "participants")
   private List<Trip> trips = new ArrayList<>();
 
   public Long getId() {

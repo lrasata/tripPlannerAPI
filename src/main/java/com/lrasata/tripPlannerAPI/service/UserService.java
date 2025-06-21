@@ -31,7 +31,7 @@ public class UserService {
     if (userRepository.existsByEmail(userDTO.getEmail())) {
       throw new IllegalArgumentException("Email already exists");
     }
-    User user = userMapper.toEntity(userDTO);
+    User user = userMapper.toEntityWithoutTrips(userDTO);
     User saved = userRepository.save(user);
     return userMapper.toDto(saved);
   }

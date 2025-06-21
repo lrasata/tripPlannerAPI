@@ -20,7 +20,7 @@ class UserMapperTest {
     // dto.setRole(RoleEnum.ROLE_PARTICIPANT);
     dto.setTripIds(null);
 
-    User user = userMapper.toEntity(dto);
+    User user = userMapper.toEntityWithoutTrips(dto);
 
     assertNotNull(user);
     assertEquals(dto.getId(), user.getId());
