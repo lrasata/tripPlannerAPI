@@ -2,68 +2,105 @@ package com.lrasata.tripPlannerAPI.service.mapper;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.lrasata.tripPlannerAPI.entity.Role;
+import com.lrasata.tripPlannerAPI.entity.RoleEnum;
+import com.lrasata.tripPlannerAPI.entity.Trip;
 import com.lrasata.tripPlannerAPI.entity.User;
+import com.lrasata.tripPlannerAPI.service.dto.RoleDTO;
 import com.lrasata.tripPlannerAPI.service.dto.UserDTO;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.mapstruct.factory.Mappers;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
 class UserMapperTest {
 
-  private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
+  @Autowired private UserMapper userMapper;
 
   @Test
-  void toEntity_shouldMapAllFields() {
-    UserDTO dto = new UserDTO();
-    dto.setId(1L);
-    dto.setFullName("Alice");
-    dto.setEmail("alice@example.com");
-    // dto.setRole(RoleEnum.ROLE_PARTICIPANT);
-    dto.setTripIds(null);
+  void testToDtoMapsRole() {
+    Role role = new Role();
+    role.setId(1L);
+    role.setName(RoleEnum.ROLE_ADMIN);
 
-    User user = userMapper.toEntityWithoutTrips(dto);
-
-    assertNotNull(user);
-    assertEquals(dto.getId(), user.getId());
-    assertEquals(dto.getFullName(), user.getFullName());
-    assertEquals(dto.getEmail(), user.getEmail());
-    assertEquals(dto.getRole(), user.getRole());
-  }
-
-  @Test
-  void toDto_shouldMapAllFields() {
     User user = new User();
-    user.setId(2L);
-    user.setFullName("Bob");
-    user.setEmail("bob@example.com");
-    // user.setRole(RoleEnum.ROLE_ADMIN);
+    user.setFullName("Admin User");
+    user.setEmail("admin@example.com");
+    user.setRole(role);
 
     UserDTO dto = userMapper.toDto(user);
 
-    assertNotNull(dto);
-    assertEquals(user.getId(), dto.getId());
-    assertEquals(user.getFullName(), dto.getFullName());
-    assertEquals(user.getEmail(), dto.getEmail());
-    assertEquals(user.getRole(), dto.getRole());
+    assertNotNull(dto.getRole());
+    assertEquals("ROLE_ADMIN", dto.getRole().getName());
   }
 
   @Test
-  void updateEntityFromDto_shouldUpdateFields() {
-    User user = new User();
-    user.setId(3L);
-    user.setFullName("Charlie");
-    user.setEmail("charlie@example.com");
-    // user.setRole(RoleEnum.ROLE_PARTICIPANT);
+  void testToEntityWithoutTripsMapsRole() {
+    RoleDTO roleDTO = new RoleDTO();
+    roleDTO.setName("ROLE_PARTICIPANT");
 
     UserDTO dto = new UserDTO();
-    dto.setFullName("Charles");
-    dto.setEmail("charles@example.com");
-    // dto.setRole(RoleEnum.ROLE_ADMIN);
+    dto.setId(10L);
+    dto.setFullName("John Doe");
+    dto.setEmail("john@example.com");
+    dto.setRole(roleDTO);
+
+    User user = userMapper.toEntityWithoutTrips(dto);
+
+    assertEquals(10L, user.getId());
+    assertEquals("John Doe", user.getFullName());
+    assertEquals("john@example.com", user.getEmail());
+    assertEquals(0, user.getTrips().size());
+    assertNotNull(user.getRole());
+    assertEquals("Participant", user.getRole().getName().getLabel());
+    assertNull(user.getPassword());
+    assertNull(user.getCreatedAt());
+    assertNull(user.getUpdatedAt());
+  }
+
+  @Test
+  void testToDtoWithTrips() {
+    Trip trip1 = new Trip();
+    trip1.setId(1L);
+    Trip trip2 = new Trip();
+    trip2.setId(2L);
+
+    User user = new User();
+    user.setId(100L);
+    user.setFullName("Jane Doe");
+    user.setEmail("jane@example.com");
+    user.setTrips(Arrays.asList(trip1, trip2));
+
+    UserDTO dto = userMapper.toDto(user);
+
+    assertEquals("Jane Doe", dto.getFullName());
+    assertEquals("jane@example.com", dto.getEmail());
+    assertNotNull(dto.getTripIds());
+    assertEquals(2, dto.getTripIds().size());
+    assertTrue(dto.getTripIds().containsAll(List.of(1L, 2L)));
+  }
+
+  @Test
+  void testUpdateEntityFromDto() {
+    UserDTO dto = new UserDTO();
+    dto.setFullName("Updated User");
+    dto.setEmail("updated@example.com");
+
+    User user = new User();
+    user.setId(5L);
+    user.setFullName("Old Name");
+    user.setEmail("old@example.com");
 
     userMapper.updateEntityFromDto(dto, user);
 
-    assertEquals("Charles", user.getFullName());
-    assertEquals("charles@example.com", user.getEmail());
-    // assertEquals(RoleEnum.ROLE_ADMIN, user.getRole());
-    assertEquals(3L, user.getId()); // Id remains unchanged
+    assertEquals(5L, user.getId()); // not updated
+    assertEquals("Updated User", user.getFullName());
+    assertEquals("updated@example.com", user.getEmail());
+    assertEquals(0, user.getTrips().size());
   }
 }
