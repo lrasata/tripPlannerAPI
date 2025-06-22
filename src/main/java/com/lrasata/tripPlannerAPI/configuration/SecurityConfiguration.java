@@ -1,6 +1,7 @@
 package com.lrasata.tripPlannerAPI.configuration;
 
 import java.util.List;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -22,15 +23,15 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfiguration {
   private final AuthenticationProvider authenticationProvider;
   private final JwtAuthenticationFilter jwtAuthenticationFilter;
-  private final TripPlannerAPIProperties properties;
+
+  @Value("${trip-design-app.allowed-origin}")
+  private String allowedOrigin;
 
   public SecurityConfiguration(
       JwtAuthenticationFilter jwtAuthenticationFilter,
-      AuthenticationProvider authenticationProvider,
-      TripPlannerAPIProperties properties) {
+      AuthenticationProvider authenticationProvider) {
     this.authenticationProvider = authenticationProvider;
     this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-    this.properties = properties;
   }
 
   @Bean
@@ -59,9 +60,9 @@ public class SecurityConfiguration {
   CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
 
-    configuration.setAllowedOrigins(List.of(properties.getAllowedOrigin()));
+    configuration.setAllowedOrigins(List.of(allowedOrigin));
     configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-    configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+    configuration.setAllowedHeaders(List.of("*"));
     // allow credentials
     configuration.setAllowCredentials(true);
     // expose headers for frontend

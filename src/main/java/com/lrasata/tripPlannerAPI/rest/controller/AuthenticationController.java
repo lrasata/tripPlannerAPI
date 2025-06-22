@@ -5,11 +5,16 @@ import com.lrasata.tripPlannerAPI.rest.response.LoginResponse;
 import com.lrasata.tripPlannerAPI.service.AuthenticationService;
 import com.lrasata.tripPlannerAPI.service.dto.LoginUserDTO;
 import com.lrasata.tripPlannerAPI.service.dto.RegisterUserDTO;
+import jakarta.servlet.http.HttpServletResponse;
+import java.time.Duration;
 import java.util.Map;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +24,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 @RestController
 public class AuthenticationController {
+  @Value("${trip-design-app.cookie.secure-attribute}")
+  private Boolean cookieSecureAttribute;
+
+  @Value("${trip-design-app.cookie.same-site}")
+  private String cookieSameSite;
+
   private static final Logger LOG = LoggerFactory.getLogger(AuthenticationController.class);
 
   private final AuthenticationService authenticationService;
@@ -41,10 +52,27 @@ public class AuthenticationController {
   }
 
   @PostMapping("/login")
-  public ResponseEntity<LoginResponse> authenticate(@RequestBody LoginUserDTO loginUserDto) {
+  public ResponseEntity<LoginResponse> authenticate(
+      @RequestBody LoginUserDTO loginUserDto, HttpServletResponse response) {
     LOG.debug("REST request to login : {}", loginUserDto.getEmail());
 
-    return ResponseEntity.ok(authenticationService.login(loginUserDto));
+    LoginResponse loginResponse = authenticationService.login(loginUserDto);
+    String jwtToken = loginResponse.getToken(); // Make sure your LoginResponse contains the token
+
+    ResponseCookie cookie =
+        ResponseCookie.from("token", jwtToken)
+            .httpOnly(true)
+            .secure(cookieSecureAttribute) // Add the "Secure" attribute to the cookie.
+            .sameSite(
+                cookieSameSite) // Lax by default, None if  cross-origin + using credentials (but
+            // must come with : secure=true)
+            .path("/")
+            .maxAge(Duration.ofDays(1))
+            .build();
+
+    response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+    return ResponseEntity.ok(loginResponse);
   }
 
   @PostMapping("/refresh-token")
@@ -57,11 +85,18 @@ public class AuthenticationController {
   }
 
   @PostMapping("/logout")
-  public ResponseEntity<?> logout(@RequestBody Map<String, String> payload) {
-    LOG.debug("REST request to logout");
+  public ResponseEntity<Void> logout(HttpServletResponse response) {
+    ResponseCookie cookie =
+        ResponseCookie.from("token", "")
+            .httpOnly(true)
+            .secure(cookieSecureAttribute)
+            .sameSite(cookieSameSite)
+            .path("/")
+            .maxAge(0) // cookie token expires immediately
+            .build();
 
-    String refreshToken = payload.get("refreshToken");
-    authenticationService.logout(refreshToken);
-    return ResponseEntity.ok("Logged out");
+    response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+    return ResponseEntity.ok().build();
   }
 }
