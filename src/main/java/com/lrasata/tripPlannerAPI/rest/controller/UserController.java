@@ -3,6 +3,7 @@ package com.lrasata.tripPlannerAPI.rest.controller;
 import com.lrasata.tripPlannerAPI.entity.User;
 import com.lrasata.tripPlannerAPI.service.UserService;
 import com.lrasata.tripPlannerAPI.service.dto.UserDTO;
+import com.lrasata.tripPlannerAPI.service.dto.UserProfileDTO;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.slf4j.Logger;
@@ -42,6 +43,17 @@ public class UserController {
 
     User currentUser = (User) authentication.getPrincipal();
     return ResponseEntity.ok(userService.getUserById(currentUser.getId()));
+  }
+
+  @PutMapping("/profile")
+  @PreAuthorize("isAuthenticated()")
+  public ResponseEntity<UserProfileDTO> updateProfile(@RequestBody UserProfileDTO profileDTO) {
+    String email =
+        SecurityContextHolder.getContext()
+            .getAuthentication()
+            .getName(); // in the app context thd username is the email
+
+    return ResponseEntity.ok(userService.updateUserProfile(email, profileDTO));
   }
 
   @GetMapping

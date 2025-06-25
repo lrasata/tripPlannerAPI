@@ -5,12 +5,16 @@ import com.lrasata.tripPlannerAPI.entity.User;
 import com.lrasata.tripPlannerAPI.repository.TripRepository;
 import com.lrasata.tripPlannerAPI.repository.UserRepository;
 import com.lrasata.tripPlannerAPI.service.dto.UserDTO;
+import com.lrasata.tripPlannerAPI.service.dto.UserProfileDTO;
 import com.lrasata.tripPlannerAPI.service.mapper.UserMapper;
+import com.lrasata.tripPlannerAPI.service.mapper.UserProfileMapper;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,12 +23,20 @@ public class UserService {
   private final UserRepository userRepository;
   private final UserMapper userMapper;
   private final TripRepository tripRepository;
+  private final PasswordEncoder passwordEncoder;
+  private final UserProfileMapper userProfileMapper;
 
   public UserService(
-      UserRepository userRepository, UserMapper userMapper, TripRepository tripRepository) {
+      UserRepository userRepository,
+      UserMapper userMapper,
+      TripRepository tripRepository,
+      PasswordEncoder passwordEncoder,
+      UserProfileMapper userProfileMapper) {
     this.userRepository = userRepository;
     this.userMapper = userMapper;
     this.tripRepository = tripRepository;
+    this.passwordEncoder = passwordEncoder;
+    this.userProfileMapper = userProfileMapper;
   }
 
   public UserDTO createUser(UserDTO userDTO) {
@@ -82,5 +94,26 @@ public class UserService {
     }
 
     userRepository.deleteById(userId);
+  }
+
+  public UserProfileDTO updateUserProfile(String email, UserProfileDTO request) {
+    User user =
+        userRepository
+            .findByEmail(email)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+    if (request.getFullName() != null) {
+      user.setFullName(request.getFullName());
+    }
+
+    if (request.getEmail() != null) {
+      user.setEmail(request.getEmail());
+    }
+
+    if (request.getPassword() != null && !request.getPassword().isBlank()) {
+      user.setPassword(passwordEncoder.encode(request.getPassword()));
+    }
+
+    return userProfileMapper.toDto(userRepository.save(user));
   }
 }

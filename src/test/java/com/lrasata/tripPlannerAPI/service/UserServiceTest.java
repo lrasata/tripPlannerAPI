@@ -8,7 +8,9 @@ import com.lrasata.tripPlannerAPI.entity.User;
 import com.lrasata.tripPlannerAPI.repository.TripRepository;
 import com.lrasata.tripPlannerAPI.repository.UserRepository;
 import com.lrasata.tripPlannerAPI.service.dto.UserDTO;
+import com.lrasata.tripPlannerAPI.service.dto.UserProfileDTO;
 import com.lrasata.tripPlannerAPI.service.mapper.UserMapper;
+import com.lrasata.tripPlannerAPI.service.mapper.UserProfileMapper;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +18,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 class UserServiceTest {
 
@@ -24,6 +28,10 @@ class UserServiceTest {
   @Mock private UserRepository userRepository;
 
   @Mock private UserMapper userMapper;
+
+  @Mock private UserProfileMapper userProfileMapper;
+
+  @Mock private PasswordEncoder passwordEncoder;
 
   @InjectMocks private UserService userService;
 
@@ -188,5 +196,71 @@ class UserServiceTest {
 
     // Verify trip was deleted
     verify(userRepository).deleteById(1L);
+  }
+
+  @Test
+  void shouldUpdateNameAndEmailOnly() {
+    // Given
+    User user = new User();
+    user.setFullName("Jane Doe");
+    user.setEmail("jane@old.com");
+
+    UserProfileDTO requestDTO = new UserProfileDTO();
+    requestDTO.setFullName("Jane Smith");
+    requestDTO.setEmail("jane@new.com");
+
+    when(userRepository.findByEmail("jane@old.com")).thenReturn(Optional.of(user));
+    when(userProfileMapper.toDto(user)).thenReturn(requestDTO);
+
+    // When
+    userService.updateUserProfile("jane@old.com", requestDTO);
+
+    // Then
+    assertEquals("Jane Smith", user.getFullName());
+    assertEquals("jane@new.com", user.getEmail());
+    verify(userRepository).save(user);
+    verify(passwordEncoder, never()).encode(any());
+  }
+
+  @Test
+  void shouldUpdatePassword() {
+    // Given
+    User user = new User();
+    user.setFullName("john");
+    user.setEmail("john@test.com");
+    user.setPassword("oldPass");
+
+    UserProfileDTO requestDTO = new UserProfileDTO();
+    requestDTO.setPassword("newPassword123");
+
+    when(userRepository.findByEmail("john@test.com")).thenReturn(Optional.of(user));
+    when(userProfileMapper.toDto(user)).thenReturn(requestDTO);
+    when(passwordEncoder.encode("newPassword123")).thenReturn("encodedPassword");
+
+    // When
+    userService.updateUserProfile("john@test.com", requestDTO);
+
+    // Then
+    assertEquals("encodedPassword", user.getPassword());
+    verify(passwordEncoder).encode("newPassword123");
+    verify(userRepository).save(user);
+  }
+
+  @Test
+  void shouldThrowWhenUserNotFound() {
+    // Given
+    when(userRepository.findByEmail("missing")).thenReturn(Optional.empty());
+
+    UserProfileDTO request = new UserProfileDTO();
+    request.setEmail("test@example.com");
+
+    // When / Then
+    assertThrows(
+        UsernameNotFoundException.class,
+        () -> {
+          userService.updateUserProfile("missing", request);
+        });
+
+    verify(userRepository, never()).save(any());
   }
 }
