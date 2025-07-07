@@ -54,6 +54,9 @@ jobs:
       - name: Run tests
         run: mvn test -Dspring.profiles.active=test
 
+      - name: Verify
+        run: mvn verify -Dspring.profiles.active=test
+
       - name: Upload coverage report as artifact
         uses: actions/upload-artifact@v4
         with:
