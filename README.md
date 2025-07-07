@@ -2,39 +2,69 @@
 
 > Status: 🚧 Project under construction
 
-A Spring Boot application designed to manage and design travel itineraries. This RESTful API facilitates trip planning by allowing users to create, read, update, and delete trip information.
-Built with Java 17, Spring Boot, PostgreSQL, and Maven.
+Trip Planner is a web app built for organizing travel plans such as flights, stays, activities, notes,
+and maps. It supports real-time collaboration, budget tracking, and personal touches like photos.
 
-## 🚀 Features
+This Spring Boot application serves as the backend counterpart to the [Trip Planner Web App](https://github.com/lrasata/trip-planner-web-app). 
+This RESTful API facilitates trip planning by allowing users to create, read, update, and delete trips.
 
-- RESTful API for trip planning and management 
-- PostgreSQL database integration 
-- Spring Data JPA with Hibernate for ORM 
-- Maven as the build system 
-- Profile-based configuration for different environments
+## Purpose
+*The Story Behind Trip Planner*
 
-## 📌 Future enhancements and features
+I love to travel and even more than that, I love organizing travel. For me, it feels like a MUST, because I  want to
+make the best out of a trip, I have got some homework to do. Planning gives me almost as much excitement as the trip
+itself. But until recently, planning a trip meant writing things down all over my computer : in notes apps, random
+document, my calendar and my email box.
 
-- ~~Integrate Swagger for API documentation~~
-- Implement authentication and authorization
-  - ~~implement Spring security to handle authentication and authorisation~~
-  - for sign up workflow, integrate email validation
-  - implement Two-Factor Authentication
-- User story : User is able to manage activities for a trip
-- User story : User is able to manage trip budget
-- Add unit and integration tests - consider testing with @WebMvcTest + MockMvc (currently using @InjectMocks + Mockito)
+I always knew there has to be a better way but when I tried different travel apps, but none of them felt right.
+They were either too complicated, too limited, or just not made for the way I think.
 
+So I decided to build my own. Something clean, flexible, and genuinely useful.
 
-## 🧰 Tech Stack
+## Features
 
-- Java 17
-- Spring Boot 3.x
-- Spring Data JPA
-- PostgreSQL
-- Maven
-- HikariCP connection pool
+- Itinerary builder
+- Collaborative planning (comments, task assignments)
+- Budget tracking by category
+- Personalization (cover photo, trip notes)
+- Map and timeline views
+- Modular architecture for adding future features easily
 
-## 🏗️ Getting Started
+## Dev perspective
+Trip Planner is not only a practical tool. Since there are countless features that could be added from weather integration,
+AI-powered suggestions, local event feeds, to journals, all that makes this personal project exciting and expandable for full-stack experimentation.
+
+## Tech Stack
+- **Frontend**: React, TypeScript, Emotion CSS, MUI
+- **Backend**: Java Spring Boot (REST API)
+  - Java 17
+  - Spring Boot 3.x
+  - Spring Data JPA
+  - PostgreSQL
+  - Maven
+  - HikariCP connection pool
+
+## Why Java and Spring Framework for the Backend
+
+I chose Java Spring Framework for the backend of Trip Planner because it offers a solid balance of robust architecture, 
+scalability, and mature tooling which is ideal for building production-grade APIs.
+
+*Stability & Performance:* Spring Boot is heavily used in enterprise environments. It’s fast, stable, and highly 
+optimized for building RESTful services that scale well as the app grows.
+
+*Strong Typing & Structure:* Coming from a TypeScript frontend, using Java gives me strong typing on the backend too. 
+It helps maintain a clear contract between client and server and reduces bugs.
+
+*Built-in Features:* Spring Boot handles things such as dependency injection, security, validation, and configuration 
+cleanly out of the box, which makes development faster and more maintainable.
+
+*REST API:* It’s particularly well-suited for creating a clean and well-documented REST API, which is the backbone of 
+this project. Combined with tools like Swagger or Spring Data, it speeds up backend development without losing 
+flexibility.
+
+---
+
+## Getting started
 
 ### Prerequisites
 
@@ -111,24 +141,14 @@ mvn spotless:check    # Fails build if not formatted
 ./mvnw clean package
 java -jar target/tripPlannerAPI-0.0.1-SNAPSHOT.jar
 ```
----
-## 🧪 Testing
+
+### Testing
 
 ```bash
 ./mvnw test
 ```
+---
 
-## 📁 Project Structure
-- src/main/java: Contains the source code
-  - controller: REST controllers 
-  - service: Business logic 
-  - repository: Data access layers 
-  - model: Entity classes
-- src/main/resources: Configuration files 
-  - application.properties: Application configurations 
-- pom.xml: Maven configuration file
-
-
-## 📝 License
+## License
 
 This project is licensed under the MIT License.
