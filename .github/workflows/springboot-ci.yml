@@ -1,4 +1,4 @@
-name: Spring Boot CI with DB
+name: Continuous Integration
 
 on:
   push:

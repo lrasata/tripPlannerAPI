@@ -1,5 +1,8 @@
 # Trip Planner API
 
+[![CI](https://github.com/lrasata/tripPlannerAPI/actions/workflows/springboot-ci.yml/badge.svg)](https://github.com/lrasata/tripPlannerAPI/actions/workflows/ci.yml)
+
+
 > Status: 🚧 Project under construction
 
 Trip Planner is a web app built for organizing travel plans such as flights, stays, activities, notes,
