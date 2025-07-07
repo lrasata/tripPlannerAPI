@@ -48,5 +48,8 @@ jobs:
       - name: Build with Maven skipTests
         run: mvn clean install -DskipTests
 
+      - name: Lint check
+        run: mvn spotless:check
+
       - name: Run tests
         run: mvn test -Dspring.profiles.active=test
