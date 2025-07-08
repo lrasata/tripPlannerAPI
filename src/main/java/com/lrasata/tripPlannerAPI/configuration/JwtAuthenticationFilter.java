@@ -2,9 +2,11 @@ package com.lrasata.tripPlannerAPI.configuration;
 
 import com.lrasata.tripPlannerAPI.service.JwtService;
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -36,7 +38,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   protected void doFilterInternal(
       @NonNull HttpServletRequest request,
       @NonNull HttpServletResponse response,
-      @NonNull FilterChain filterChain) {
+      @NonNull FilterChain filterChain)
+      throws ServletException, IOException {
+
+    String path = request.getRequestURI();
+
+    // Skip JWT validation for public endpoints
+    if (path.startsWith("/auth/")) {
+      filterChain.doFilter(request, response);
+      return;
+    }
 
     String jwt = null;
     final String authHeader = request.getHeader("Authorization");

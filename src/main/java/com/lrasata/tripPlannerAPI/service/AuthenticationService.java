@@ -10,16 +10,23 @@ import com.lrasata.tripPlannerAPI.repository.UserRepository;
 import com.lrasata.tripPlannerAPI.rest.response.LoginResponse;
 import com.lrasata.tripPlannerAPI.service.dto.LoginUserDTO;
 import com.lrasata.tripPlannerAPI.service.dto.RegisterUserDTO;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AuthenticationService {
+  private static final Logger LOG = LoggerFactory.getLogger(AuthenticationService.class);
+
   private final UserRepository userRepository;
 
   private final RoleRepository roleRepository;
@@ -37,6 +44,12 @@ public class AuthenticationService {
 
   @Value("${security.jwt.refresh-token.expiration}")
   private long refreshTokenExpirationTime;
+
+  @Value("${trip-design-app.cookie.secure-attribute}")
+  private Boolean cookieSecureAttribute;
+
+  @Value("${trip-design-app.cookie.same-site}")
+  private String cookieSameSite;
 
   public AuthenticationService(
       UserRepository userRepository,
@@ -81,23 +94,58 @@ public class AuthenticationService {
     return userRepository.findByEmail(loginUserDTO.getEmail()).orElseThrow();
   }
 
-  public LoginResponse login(LoginUserDTO loginUserDto) {
-    User authenticatedUser = this.authenticate(loginUserDto);
+  public LoginResponse buildLoginResponse(User user) {
 
-    String refreshJwtToken = jwtService.generateRefreshToken(authenticatedUser);
+    String refreshJwtToken = jwtService.generateRefreshToken(user);
     RefreshToken refreshToken = new RefreshToken();
     refreshToken.setToken(refreshJwtToken);
-    refreshToken.setUsername(authenticatedUser.getUsername());
+    refreshToken.setUsername(user.getUsername());
     refreshToken.setExpiryDate(Instant.now().plusMillis(refreshTokenExpirationTime));
     refreshTokenRepository.save(refreshToken);
 
-    String jwtToken = jwtService.generateAccessToken(authenticatedUser);
+    String jwtToken = jwtService.generateAccessToken(user);
     LoginResponse loginResponse = new LoginResponse();
     loginResponse.setToken(jwtToken);
     loginResponse.setExpiresIn(accessTokenExpirationTime);
     loginResponse.setRefreshToken(refreshJwtToken);
 
     return loginResponse;
+  }
+
+  @Transactional
+  public LoginResponse login(LoginUserDTO loginUserDto) {
+    User authenticatedUser = this.authenticate(loginUserDto);
+
+    return buildLoginResponse(authenticatedUser);
+  }
+
+  @Transactional
+  public LoginResponse refreshTokens(String oldRefreshToken) {
+    RefreshToken token =
+        refreshTokenRepository
+            .findByToken(oldRefreshToken)
+            .orElseThrow(() -> new RuntimeException("Invalid refresh token"));
+
+    if (token.getExpiryDate().isBefore(Instant.now())) {
+      // delete expired token
+      refreshTokenRepository.deleteByToken(oldRefreshToken);
+      throw new RuntimeException("Expired refresh token");
+    }
+
+    // Find the user
+    User user =
+        userRepository
+            .findByEmail(token.getUsername())
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+    // Delete old refresh token (to prevent reuse)
+    try {
+      refreshTokenRepository.deleteByToken(oldRefreshToken);
+    } catch (Exception e) {
+      LOG.warn("Token already deleted by another request: {}", oldRefreshToken);
+    }
+
+    return buildLoginResponse(user);
   }
 
   public User createAdministrator(RegisterUserDTO registerUserDTO) {
@@ -116,20 +164,15 @@ public class AuthenticationService {
     return userRepository.save(user);
   }
 
-  public String refreshAccessToken(String refreshToken) {
-    RefreshToken token =
-        refreshTokenRepository
-            .findByToken(refreshToken)
-            .orElseThrow(() -> new RuntimeException("Invalid refresh token"));
-
-    if (token.getExpiryDate().isBefore(Instant.now())) {
-      refreshTokenRepository.deleteByToken(refreshToken);
-      throw new RuntimeException("Expired refresh token");
-    }
-
-    User user = userRepository.findByEmail(token.getUsername()).orElseThrow();
-
-    return jwtService.generateAccessToken(user);
+  public ResponseCookie setResponseCookie(String accessToken, Duration duration) {
+    return ResponseCookie.from("token", accessToken)
+        .httpOnly(true)
+        .secure(cookieSecureAttribute) // Add the "Secure" attribute to the cookie.
+        .sameSite(cookieSameSite) // Lax by default, None if  cross-origin + using credentials (but
+        // must come with : secure=true)
+        .path("/")
+        .maxAge(duration)
+        .build();
   }
 
   public void logout(String refreshToken) {

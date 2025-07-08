@@ -26,9 +26,9 @@ So I decided to build my own. Something clean, flexible, and genuinely useful.
 
 ## Features
 
-- Itinerary builder
+- Itinerary builder :bulb:
+- Budget tracking :bulb:
 - Collaborative planning (comments, task assignments)
-- Budget tracking by category
 - Personalization (cover photo, trip notes)
 - Map and timeline views
 - Modular architecture for adding future features easily

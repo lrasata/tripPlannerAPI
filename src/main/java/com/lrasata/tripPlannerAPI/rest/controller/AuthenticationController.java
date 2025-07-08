@@ -59,41 +59,32 @@ public class AuthenticationController {
     LoginResponse loginResponse = authenticationService.login(loginUserDto);
     String jwtToken = loginResponse.getToken(); // Make sure your LoginResponse contains the token
 
-    ResponseCookie cookie =
-        ResponseCookie.from("token", jwtToken)
-            .httpOnly(true)
-            .secure(cookieSecureAttribute) // Add the "Secure" attribute to the cookie.
-            .sameSite(
-                cookieSameSite) // Lax by default, None if  cross-origin + using credentials (but
-            // must come with : secure=true)
-            .path("/")
-            .maxAge(Duration.ofDays(1))
-            .build();
-
+    ResponseCookie cookie = authenticationService.setResponseCookie(jwtToken, Duration.ofDays(1));
     response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
     return ResponseEntity.ok(loginResponse);
   }
 
   @PostMapping("/refresh-token")
-  public ResponseEntity<?> refresh(@RequestBody Map<String, String> payload) {
+  public ResponseEntity<?> refresh(
+      @RequestBody Map<String, String> payload, HttpServletResponse response) {
     LOG.debug("REST request to refresh token");
-
     String refreshToken = payload.get("refreshToken");
-    return ResponseEntity.ok(
-        Map.of("accessToken", authenticationService.refreshAccessToken(refreshToken)));
+    LoginResponse tokens = authenticationService.refreshTokens(refreshToken);
+    String newAccessToken = tokens.getToken();
+
+    ResponseCookie cookie =
+        authenticationService.setResponseCookie(newAccessToken, Duration.ofDays(1));
+    response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+    return ResponseEntity.ok(tokens);
   }
 
   @PostMapping("/logout")
   public ResponseEntity<Void> logout(HttpServletResponse response) {
     ResponseCookie cookie =
-        ResponseCookie.from("token", "")
-            .httpOnly(true)
-            .secure(cookieSecureAttribute)
-            .sameSite(cookieSameSite)
-            .path("/")
-            .maxAge(0) // cookie token expires immediately
-            .build();
+        authenticationService.setResponseCookie(
+            "", Duration.ofDays(0)); // cookie token expires immediately
 
     response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
