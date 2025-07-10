@@ -1,0 +1,31 @@
+# Ignore Maven/Gradle wrapper and build directories
+target/
+build/
+
+# Ignore local IDE files and folders
+*.iml
+*.ipr
+*.iws
+.idea/
+.vscode/
+
+# Ignore Git files
+.git
+.gitignore
+
+# Ignore logs
+*.log
+
+# Ignore OS generated files
+.DS_Store
+Thumbs.db
+
+# Ignore node_modules if you have frontend code
+node_modules/
+
+# Ignore Dockerfile itself and docker-compose files if you want (optional)
+Dockerfile
+docker-compose*.yml
+
+# Ignore local environment files
+.env

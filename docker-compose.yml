@@ -1,0 +1,25 @@
+services:
+  database:
+    image: postgres:17
+    restart: always
+    environment:
+      POSTGRES_DB: tripdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  trip-design-app:
+    build: .
+    depends_on:
+      - database
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    restart: always
+
+volumes:
+  db_data:

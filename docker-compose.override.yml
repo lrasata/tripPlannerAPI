@@ -1,0 +1,12 @@
+services:
+  trip-design-app:
+    build: .
+    command: mvn spring-boot:run
+    volumes:
+      - ./src:/app/src
+      - ./pom.xml:/app/pom.xml
+      - ~/.m2:/root/.m2  # speeds up build by caching Maven repo
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"

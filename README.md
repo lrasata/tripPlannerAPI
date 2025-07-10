@@ -1,4 +1,4 @@
-# Trip Planner API
+# Trip Planner API 🚧
 
 [![CI](https://github.com/lrasata/tripPlannerAPI/actions/workflows/springboot-ci.yml/badge.svg)](https://github.com/lrasata/tripPlannerAPI/actions/workflows/ci.yml)
 
@@ -84,19 +84,33 @@ cd tripPlannerAPI
 
 ### Configure application
 
-Edit `src/main/resources/application.properties`:
+Edit `.env`, each env variable corresponds to the following app properties:
+````text
+# .env
+
+SPRING_DATASOURCE_URL=
+SPRING_DATASOURCE_USERNAME=
+SPRING_DATASOURCE_PASSWORD=
+JWT_SECRET_KEY=
+ALLOWED_ORIGIN=
+COOKIE_SECURE_ATTRIBUTE=
+COOKIE_SAME_SITE=
+SUPER_ADMIN_FULLNAME=
+SUPER_ADMIN_EMAIL=
+SUPER_ADMIN_PASSWORD=
+````
 
 #### Database properties
 ```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/<database-name>
-spring.datasource.username=<username>
-spring.datasource.password=<password>
+spring.datasource.url=${SPRING_DATASOURCE_URL}
+spring.datasource.username=${SPRING_DATASOURCE_USERNAME}
+spring.datasource.password=${SPRING_DATASOURCE_PASSWORD}
 spring.jpa.hibernate.ddl-auto=update
 ```
 
 #### Security properties
 ```properties
-security.jwt.secret-key=
+security.jwt.secret-key=${JWT_SECRET_KEY}
 # access token expiration time: 15 min in millisecond
 security.jwt.access-token.expiration=900000
 # refresh token expiration time: 60 min in millisecond
@@ -106,12 +120,15 @@ security.jwt.refresh-token.expiration=3600000
 #### Application properties
 ```properties
 # allowed origin : domain that is explicitly permitted to access resources  in the context of Cross-Origin Resource Sharing (CORS)
-trip-design-app.allowed-origin=
-
-# fullname, email and password of boostraped SuperAdmin user when app starts
-trip-design-app.super-admin.fullname=
-trip-design-app.super-admin.email=
-trip-design-app.super-admin.password=
+trip-design-app.allowed-origin=${ALLOWED_ORIGIN}
+# trip-design-app.cookie.secure-attribute should be true in production
+trip-design-app.cookie.secure-attribute=${COOKIE_SECURE_ATTRIBUTE}
+# trip-design-app.cookie.same-site should be true if cross origin + use credentials
+trip-design-app.cookie.same-site=${COOKIE_SAME_SITE}
+# fullname, email and password of bootsraped SuperAdmin user when app starts
+trip-design-app.super-admin.fullname=${SUPER_ADMIN_FULLNAME}
+trip-design-app.super-admin.email=${SUPER_ADMIN_EMAIL}
+trip-design-app.super-admin.password=${SUPER_ADMIN_PASSWORD}
 ```
 
 #### Logging level
@@ -150,6 +167,23 @@ java -jar target/tripPlannerAPI-0.0.1-SNAPSHOT.jar
 ```bash
 ./mvnw test
 ```
+
+---
+
+## Docker
+
+You can containerize the Trip Planner backend app using Docker and manage multi-container setups with Docker Compose.
+
+### Using Docker Compose
+
+```bash
+docker compose up --build
+```
+
+This will build and start services in `docker-compose.yml` and `docker-compose.override.yml` . In this file, the web app is set up to be accessible on port `8080` : `http://localhost:8080/`
+
+Make sure Docker is installed and running on your system.
+
 ---
 
 ## License
