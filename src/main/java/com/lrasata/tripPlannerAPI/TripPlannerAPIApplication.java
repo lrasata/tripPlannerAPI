@@ -1,6 +1,6 @@
 package com.lrasata.tripPlannerAPI;
 
-import com.lrasata.tripPlannerAPI.service.DotEnvLoader;
+import com.lrasata.tripPlannerAPI.service.EnvLoader;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class TripPlannerAPIApplication {
 
   public static void main(String[] args) {
-    DotEnvLoader.load();
+    EnvLoader.load();
     SpringApplication.run(TripPlannerAPIApplication.class, args);
   }
 }

@@ -84,7 +84,7 @@ cd tripPlannerAPI
 
 ### Configure application
 
-Edit `.env`, each env variable corresponds to the following app properties:
+Provide `.env` for local testing or load the following env variables at runtime.
 ````text
 # .env
 
@@ -99,6 +99,7 @@ SUPER_ADMIN_FULLNAME=
 SUPER_ADMIN_EMAIL=
 SUPER_ADMIN_PASSWORD=
 ````
+Each env variable corresponds to the following app properties:
 
 #### Database properties
 ```properties
@@ -137,9 +138,25 @@ logging.level.com.lrasata.tripPlannerAPI=
 ```
 
 
-### Run the application
+### Run the application locally
 
-With Maven Wrapper:
+Set ENVIRONMENT variable:
+
+````text
+export ENVIRONMENT=local
+````
+
+or for CMD :
+````text
+set ENVIRONMENT=local
+````
+
+or for Powershell:
+````text
+$Env:ENVIRONMENT = "local"
+````
+
+Then run with Maven Wrapper:
 
 ```bash
 ./mvnw spring-boot:run
