@@ -22,7 +22,7 @@ public class EnvLoader {
             .forEach(
                 entry -> {
                   System.setProperty(entry.getKey(), entry.getValue());
-                  System.out.println("Loaded: " + entry.getKey());
+                  // System.out.println("Loaded: " + entry.getKey());
                 });
       } catch (Exception e) {
         System.out.println("Failed to load .env locally: " + e.getMessage());

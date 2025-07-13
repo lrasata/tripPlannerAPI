@@ -27,6 +27,13 @@ public class Role {
   @Column(name = "updated_at")
   private Date updatedAt;
 
+  public Role() {}
+
+  public Role(RoleEnum name, String description) {
+    this.name = name;
+    this.description = description;
+  }
+
   public Long getId() {
     return id;
   }

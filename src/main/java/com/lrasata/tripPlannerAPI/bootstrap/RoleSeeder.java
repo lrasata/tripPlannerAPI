@@ -8,9 +8,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
+@Order(1)
 public class RoleSeeder implements ApplicationListener<ContextRefreshedEvent> {
   private static final Logger LOG = LoggerFactory.getLogger(RoleSeeder.class);
   private final RoleRepository roleRepository;
@@ -20,6 +23,7 @@ public class RoleSeeder implements ApplicationListener<ContextRefreshedEvent> {
   }
 
   @Override
+  @Transactional
   public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
     this.loadRoles();
   }
@@ -41,10 +45,7 @@ public class RoleSeeder implements ApplicationListener<ContextRefreshedEvent> {
               optionalRole.ifPresentOrElse(
                   role -> LOG.info("Role '{}' already exists. Skipping creation.", role.getName()),
                   () -> {
-                    Role roleToCreate = new Role();
-
-                    roleToCreate.setName(roleName);
-                    roleToCreate.setDescription(roleDescriptionMap.get(roleName));
+                    Role roleToCreate = new Role(roleName, roleDescriptionMap.get(roleName));
 
                     try {
                       roleRepository.save(roleToCreate);
