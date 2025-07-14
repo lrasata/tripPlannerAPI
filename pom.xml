@@ -106,15 +106,24 @@
 			<scope>runtime</scope>
 		</dependency>
 
+		<!-- dotenv to manage .env file -->
 		<dependency>
 			<groupId>io.github.cdimascio</groupId>
 			<artifactId>dotenv-java</artifactId>
 			<version>3.0.0</version>
 		</dependency>
 
+		<!-- Spring boot actuator exposes endpoints about app  health, metrics, configuration, and monitoring -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+
+		<!-- Micrometer expose metrics in a format that Prometheus can scrape and store -->
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+			<scope>runtime</scope>
 		</dependency>
 
 	</dependencies>
