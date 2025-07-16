@@ -96,7 +96,7 @@ public class UserService {
     userRepository.deleteById(userId);
   }
 
-  public UserProfileDTO updateUserProfile(String email, UserProfileDTO request) {
+  public UserDTO updateUserProfile(String email, UserProfileDTO request) {
     User user =
         userRepository
             .findByEmail(email)
@@ -114,6 +114,6 @@ public class UserService {
       user.setPassword(passwordEncoder.encode(request.getPassword()));
     }
 
-    return userProfileMapper.toDto(userRepository.save(user));
+    return userMapper.toDto(userRepository.save(user));
   }
 }

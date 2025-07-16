@@ -47,7 +47,7 @@ public class UserController {
 
   @PutMapping("/profile")
   @PreAuthorize("isAuthenticated()")
-  public ResponseEntity<UserProfileDTO> updateProfile(@RequestBody UserProfileDTO profileDTO) {
+  public ResponseEntity<UserDTO> updateProfile(@RequestBody UserProfileDTO profileDTO) {
     String email =
         SecurityContextHolder.getContext()
             .getAuthentication()
