@@ -61,6 +61,12 @@ public class TripController {
       throw new ResponseStatusException(
           HttpStatus.BAD_REQUEST, "A new trip cannot already have an ID");
     }
+
+    if (tripDTO.getReturnDate().isBefore(tripDTO.getDepartureDate())) {
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST, "The return date should be AFTER the departure date");
+    }
+
     TripDTO responseDTO = tripService.createTrip(tripDTO);
     return ResponseEntity.created(URI.create("/api/trips/" + responseDTO.getId()))
         .body(responseDTO);
@@ -74,6 +80,12 @@ public class TripController {
     if (tripDTO.getId() == null) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A trip should have an ID");
     }
+
+    if (tripDTO.getReturnDate().isBefore(tripDTO.getDepartureDate())) {
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST, "The return date should be AFTER the departure date");
+    }
+
     if (!Objects.equals(id, tripDTO.getId())) {
       throw new ResponseStatusException(
           HttpStatus.BAD_REQUEST, "URI endpoint and  request body don't match");

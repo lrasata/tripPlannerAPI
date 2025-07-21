@@ -120,6 +120,22 @@ class TripControllerTest {
   }
 
   @Test
+  void createTrip_withInvalidDates_throwsException() {
+    TripDTO request = createTrip(null, "Invalid Trip");
+    request.setDepartureDate(LocalDate.now().plusDays(3));
+    request.setReturnDate(LocalDate.now().minusDays(1));
+
+    ResponseStatusException ex =
+        assertThrows(
+            ResponseStatusException.class,
+            () -> {
+              tripController.createTrip(request);
+            });
+
+    assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+  }
+
+  @Test
   void updateTrip_success() {
     TripDTO update = createTrip(1L, "Updated Trip");
     when(tripRepository.existsById(1L)).thenReturn(true);
@@ -158,6 +174,24 @@ class TripControllerTest {
             });
 
     assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
+  }
+
+  @Test
+  void updateTrip_tripWithInvalidDates_throwsException() {
+    TripDTO update = createTrip(5L, "Trip with invalid dates");
+    update.setDepartureDate(LocalDate.now().plusDays(3));
+    update.setReturnDate(LocalDate.now().minusDays(1));
+
+    when(tripRepository.existsById(5L)).thenReturn(true);
+
+    ResponseStatusException ex =
+        assertThrows(
+            ResponseStatusException.class,
+            () -> {
+              tripController.updateTrip(5L, update);
+            });
+
+    assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
   }
 
   @Test
