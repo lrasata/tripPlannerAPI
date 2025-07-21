@@ -1,6 +1,5 @@
 package com.lrasata.tripPlannerAPI.service.dto;
 
-import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -16,10 +15,7 @@ public class TripDTO implements Serializable {
   @NotNull private String name;
   private String description;
 
-  @FutureOrPresent(message = "The departure date must be today or in the future.")
   private LocalDate departureDate;
-
-  @FutureOrPresent(message = "The arrival date must be today or in the future.")
   private LocalDate returnDate;
 
   private LocationDTO departureLocation;
