@@ -11,4 +11,7 @@ public interface TripRepository extends JpaRepository<Trip, Long> {
   List<Trip> findByDepartureDateBefore(LocalDate date);
 
   List<Trip> findByDepartureDateAfter(LocalDate date);
+
+  List<Trip> findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+      String name, String description);
 }

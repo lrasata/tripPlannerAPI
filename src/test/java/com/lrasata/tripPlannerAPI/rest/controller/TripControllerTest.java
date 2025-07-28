@@ -45,7 +45,7 @@ class TripControllerTest {
     List<TripDTO> trips = List.of(createTrip(1L, "Trip A"), createTrip(2L, "Trip B"));
     when(tripService.findAll()).thenReturn(trips);
 
-    ResponseEntity<List<TripDTO>> response = tripController.getAllTrips(null);
+    ResponseEntity<List<TripDTO>> response = tripController.getAllTrips(null, null);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertEquals(2, response.getBody().size());
@@ -56,7 +56,7 @@ class TripControllerTest {
     List<TripDTO> trips = List.of(createTrip(3L, "Old Trip"));
     when(tripService.findTripsInPast()).thenReturn(trips);
 
-    ResponseEntity<List<TripDTO>> response = tripController.getAllTrips("past");
+    ResponseEntity<List<TripDTO>> response = tripController.getAllTrips("past", null);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertEquals("Old Trip", response.getBody().get(0).getName());
@@ -67,7 +67,29 @@ class TripControllerTest {
     List<TripDTO> trips = List.of(createTrip(4L, "Future Trip"));
     when(tripService.findTripsInFuture()).thenReturn(trips);
 
-    ResponseEntity<List<TripDTO>> response = tripController.getAllTrips("future");
+    ResponseEntity<List<TripDTO>> response = tripController.getAllTrips("future", null);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals("Future Trip", response.getBody().get(0).getName());
+  }
+
+  @Test
+  void getAllTrips_withKeywordFilter_returnsFilteredTrips() {
+    List<TripDTO> trips = List.of(createTrip(5L, "Trip A to return"));
+    when(tripService.findTripsByKeyword("trip a")).thenReturn(trips);
+
+    ResponseEntity<List<TripDTO>> response = tripController.getAllTrips(null, "trip a");
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals("Trip A to return", response.getBody().get(0).getName());
+  }
+
+  @Test
+  void getAllTrips_withKeywordFilterAndFutureFilter_returnsFilteredTrips() {
+    List<TripDTO> trips = List.of(createTrip(6L, "Future Trip"));
+    when(tripService.findTripsByKeyword("future trip")).thenReturn(trips);
+
+    ResponseEntity<List<TripDTO>> response = tripController.getAllTrips("future", "future trip");
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertEquals("Future Trip", response.getBody().get(0).getName());

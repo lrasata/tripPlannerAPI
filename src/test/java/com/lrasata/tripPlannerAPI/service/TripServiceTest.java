@@ -37,6 +37,8 @@ class TripServiceTest {
   private Trip createTrip(Long id) {
     Trip trip = new Trip();
     trip.setId(id);
+    trip.setName("Trip A");
+    trip.setDescription("Description");
     return trip;
   }
 
@@ -82,6 +84,20 @@ class TripServiceTest {
     when(tripMapper.toDto(any())).thenReturn(new TripDTO());
 
     List<TripDTO> result = tripService.findTripsInFuture();
+
+    assertEquals(1, result.size());
+  }
+
+  @Test
+  void findTripsByKeyword_returnsFilteredTrips() {
+    String keyword = "trip a";
+    List<Trip> trips = List.of(createTrip(1L));
+    when(tripRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+            keyword, keyword))
+        .thenReturn(trips);
+    when(tripMapper.toDto(any())).thenReturn(new TripDTO());
+
+    List<TripDTO> result = tripService.findTripsByKeyword(keyword);
 
     assertEquals(1, result.size());
   }

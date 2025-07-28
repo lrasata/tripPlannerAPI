@@ -54,6 +54,14 @@ public class TripService {
         .collect(Collectors.toList());
   }
 
+  public List<TripDTO> findTripsByKeyword(String keyword) {
+    return tripRepository
+        .findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(keyword, keyword)
+        .stream()
+        .map(tripMapper::toDto)
+        .collect(Collectors.toList());
+  }
+
   public Optional<TripDTO> findOneById(Long id) {
     return tripRepository.findById(id).map(tripMapper::toDto);
   }

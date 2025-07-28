@@ -31,16 +31,20 @@ public class TripController {
 
   @GetMapping
   public ResponseEntity<List<TripDTO>> getAllTrips(
-      @RequestParam(required = false) String dateFilter) {
-    LOG.debug("REST request to get all Trips with filter: {}", dateFilter);
+      @RequestParam(required = false) String dateFilter,
+      @RequestParam(required = false) String keyword) {
+    LOG.debug(
+        "REST request to get all Trips with dateFilter= {}, and keyword= {}", dateFilter, keyword);
     List<TripDTO> trips;
 
-    if ("past".equalsIgnoreCase(dateFilter)) {
-      trips = tripService.findTripsInPast();
-    } else if ("future".equalsIgnoreCase(dateFilter)) {
-      trips = tripService.findTripsInFuture();
+    if (keyword != null && !keyword.isBlank()) {
+      trips = tripService.findTripsByKeyword(keyword);
     } else {
-      trips = tripService.findAll();
+      switch (dateFilter != null ? dateFilter.toLowerCase() : "") {
+        case "past" -> trips = tripService.findTripsInPast();
+        case "future" -> trips = tripService.findTripsInFuture();
+        default -> trips = tripService.findAll();
+      }
     }
 
     return ResponseEntity.ok().body(trips);
