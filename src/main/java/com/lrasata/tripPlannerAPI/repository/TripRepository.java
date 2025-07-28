@@ -2,16 +2,17 @@ package com.lrasata.tripPlannerAPI.repository;
 
 import com.lrasata.tripPlannerAPI.entity.Trip;
 import java.time.LocalDate;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TripRepository extends JpaRepository<Trip, Long> {
-  List<Trip> findByDepartureDateBefore(LocalDate date);
+  Page<Trip> findByDepartureDateBefore(LocalDate date, Pageable pageable);
 
-  List<Trip> findByDepartureDateAfter(LocalDate date);
+  Page<Trip> findByDepartureDateAfter(LocalDate date, Pageable pageable);
 
-  List<Trip> findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
-      String name, String description);
+  Page<Trip> findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+      String name, String description, Pageable pageable);
 }

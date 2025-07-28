@@ -14,6 +14,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,28 +40,26 @@ public class TripService {
     this.userRepository = userRepository;
   }
 
-  public List<TripDTO> findAll() {
-    return tripRepository.findAll().stream().map(tripMapper::toDto).collect(Collectors.toList());
+  public Page<TripDTO> findAll(Pageable pageable) {
+    return tripRepository.findAll(pageable).map(tripMapper::toDto);
   }
 
-  public List<TripDTO> findTripsInPast() {
-    return tripRepository.findByDepartureDateBefore(LocalDate.now()).stream()
-        .map(tripMapper::toDto)
-        .collect(Collectors.toList());
-  }
-
-  public List<TripDTO> findTripsInFuture() {
-    return tripRepository.findByDepartureDateAfter(LocalDate.now()).stream()
-        .map(tripMapper::toDto)
-        .collect(Collectors.toList());
-  }
-
-  public List<TripDTO> findTripsByKeyword(String keyword) {
+  public Page<TripDTO> findTripsInPast(Pageable pageable) {
     return tripRepository
-        .findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(keyword, keyword)
-        .stream()
-        .map(tripMapper::toDto)
-        .collect(Collectors.toList());
+        .findByDepartureDateBefore(LocalDate.now(), pageable)
+        .map(tripMapper::toDto);
+  }
+
+  public Page<TripDTO> findTripsInFuture(Pageable pageable) {
+    return tripRepository
+        .findByDepartureDateAfter(LocalDate.now(), pageable)
+        .map(tripMapper::toDto);
+  }
+
+  public Page<TripDTO> findTripsByKeyword(String keyword, Pageable pageable) {
+    return tripRepository
+        .findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(keyword, keyword, pageable)
+        .map(tripMapper::toDto);
   }
 
   public Optional<TripDTO> findOneById(Long id) {

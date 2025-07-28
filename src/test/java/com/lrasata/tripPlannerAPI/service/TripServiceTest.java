@@ -16,6 +16,10 @@ import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 class TripServiceTest {
 
@@ -57,49 +61,64 @@ class TripServiceTest {
 
   @Test
   void findAll_returnsMappedTrips() {
+    Pageable pageable = PageRequest.of(0, 10);
     List<Trip> trips = List.of(createTrip(1L), createTrip(2L));
-    when(tripRepository.findAll()).thenReturn(trips);
+    Page<Trip> pagedResult = new PageImpl<>(trips);
+
+    when(tripRepository.findAll(pageable)).thenReturn(pagedResult);
     when(tripMapper.toDto(any())).thenReturn(new TripDTO());
 
-    List<TripDTO> result = tripService.findAll();
+    Page<TripDTO> result = tripService.findAll(pageable);
 
-    assertEquals(2, result.size());
+    assertEquals(2, result.stream().toList().size());
   }
 
   @Test
   void findTripsInPast_returnsFilteredTrips() {
     List<Trip> trips = List.of(createTrip(1L));
-    when(tripRepository.findByDepartureDateBefore(any())).thenReturn(trips);
+    Page<Trip> pagedResult = new PageImpl<>(trips);
+
+    when(tripRepository.findByDepartureDateBefore(any(), any(Pageable.class)))
+        .thenReturn(pagedResult);
     when(tripMapper.toDto(any())).thenReturn(new TripDTO());
 
-    List<TripDTO> result = tripService.findTripsInPast();
+    Pageable pageable = PageRequest.of(0, 10);
+    Page<TripDTO> result = tripService.findTripsInPast(pageable);
 
-    assertEquals(1, result.size());
+    assertEquals(1, result.stream().toList().size());
   }
 
   @Test
   void findTripsInFuture_returnsFilteredTrips() {
+
     List<Trip> trips = List.of(createTrip(1L));
-    when(tripRepository.findByDepartureDateAfter(any())).thenReturn(trips);
+    Page<Trip> pagedResult = new PageImpl<>(trips);
+
+    when(tripRepository.findByDepartureDateAfter(any(), any(Pageable.class)))
+        .thenReturn(pagedResult);
     when(tripMapper.toDto(any())).thenReturn(new TripDTO());
 
-    List<TripDTO> result = tripService.findTripsInFuture();
+    Pageable pageable = PageRequest.of(0, 10);
+    Page<TripDTO> result = tripService.findTripsInFuture(pageable);
 
-    assertEquals(1, result.size());
+    assertEquals(1, result.stream().toList().size());
   }
 
   @Test
   void findTripsByKeyword_returnsFilteredTrips() {
     String keyword = "trip a";
     List<Trip> trips = List.of(createTrip(1L));
+    Page<Trip> pagedResult = new PageImpl<>(trips);
+
     when(tripRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
-            keyword, keyword))
-        .thenReturn(trips);
+            eq(keyword), eq(keyword), any(Pageable.class)))
+        .thenReturn(pagedResult);
     when(tripMapper.toDto(any())).thenReturn(new TripDTO());
 
-    List<TripDTO> result = tripService.findTripsByKeyword(keyword);
+    Pageable pageable = PageRequest.of(0, 10);
+    Page<TripDTO> result = tripService.findTripsByKeyword(keyword, pageable);
 
-    assertEquals(1, result.size());
+    assertEquals(1, result.stream().toList().size());
   }
 
   @Test

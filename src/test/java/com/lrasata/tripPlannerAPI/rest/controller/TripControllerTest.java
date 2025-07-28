@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 
 import com.lrasata.tripPlannerAPI.repository.TripRepository;
 import com.lrasata.tripPlannerAPI.service.TripService;
+import com.lrasata.tripPlannerAPI.service.dto.PaginatedResponse;
 import com.lrasata.tripPlannerAPI.service.dto.TripDTO;
 import java.time.LocalDate;
 import java.util.List;
@@ -12,6 +13,9 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
@@ -41,58 +45,70 @@ class TripControllerTest {
   }
 
   @Test
-  void getAllTrips_noFilter_returnsAll() {
+  void getAllTrips_noFilter_returnsAllPaginatedResult() {
     List<TripDTO> trips = List.of(createTrip(1L, "Trip A"), createTrip(2L, "Trip B"));
-    when(tripService.findAll()).thenReturn(trips);
+    Page<TripDTO> pagedResult = new PageImpl<>(trips);
+    when(tripService.findAll(any(Pageable.class))).thenReturn(pagedResult);
 
-    ResponseEntity<List<TripDTO>> response = tripController.getAllTrips(null, null);
+    ResponseEntity<PaginatedResponse<TripDTO>> response =
+        tripController.getAllTrips(null, null, 0, 10);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertEquals(2, response.getBody().size());
+    assertEquals(2, response.getBody().getTotalElements());
+    assertEquals(1, response.getBody().getTotalPages());
   }
 
   @Test
   void getAllTrips_withPastFilter_returnsPastTrips() {
     List<TripDTO> trips = List.of(createTrip(3L, "Old Trip"));
-    when(tripService.findTripsInPast()).thenReturn(trips);
+    Page<TripDTO> pagedResult = new PageImpl<>(trips);
+    when(tripService.findTripsInPast(any(Pageable.class))).thenReturn(pagedResult);
 
-    ResponseEntity<List<TripDTO>> response = tripController.getAllTrips("past", null);
+    ResponseEntity<PaginatedResponse<TripDTO>> response =
+        tripController.getAllTrips("past", null, 0, 10);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertEquals("Old Trip", response.getBody().get(0).getName());
+    assertEquals("Old Trip", response.getBody().getContent().get(0).getName());
   }
 
   @Test
   void getAllTrips_withFutureFilter_returnsFutureTrips() {
     List<TripDTO> trips = List.of(createTrip(4L, "Future Trip"));
-    when(tripService.findTripsInFuture()).thenReturn(trips);
+    Page<TripDTO> pagedResult = new PageImpl<>(trips);
+    when(tripService.findTripsInFuture(any(Pageable.class))).thenReturn(pagedResult);
 
-    ResponseEntity<List<TripDTO>> response = tripController.getAllTrips("future", null);
+    ResponseEntity<PaginatedResponse<TripDTO>> response =
+        tripController.getAllTrips("future", null, 0, 10);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertEquals("Future Trip", response.getBody().get(0).getName());
+    assertEquals("Future Trip", response.getBody().getContent().get(0).getName());
   }
 
   @Test
   void getAllTrips_withKeywordFilter_returnsFilteredTrips() {
     List<TripDTO> trips = List.of(createTrip(5L, "Trip A to return"));
-    when(tripService.findTripsByKeyword("trip a")).thenReturn(trips);
+    Page<TripDTO> pagedResult = new PageImpl<>(trips);
+    when(tripService.findTripsByKeyword(eq("trip a"), any(Pageable.class))).thenReturn(pagedResult);
 
-    ResponseEntity<List<TripDTO>> response = tripController.getAllTrips(null, "trip a");
+    ResponseEntity<PaginatedResponse<TripDTO>> response =
+        tripController.getAllTrips(null, "trip a", 0, 10);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertEquals("Trip A to return", response.getBody().get(0).getName());
+    assertEquals("Trip A to return", response.getBody().getContent().get(0).getName());
   }
 
   @Test
   void getAllTrips_withKeywordFilterAndFutureFilter_returnsFilteredTrips() {
     List<TripDTO> trips = List.of(createTrip(6L, "Future Trip"));
-    when(tripService.findTripsByKeyword("future trip")).thenReturn(trips);
+    Page<TripDTO> pagedResult = new PageImpl<>(trips);
+    when(tripService.findTripsByKeyword(eq("future trip"), any(Pageable.class)))
+        .thenReturn(pagedResult);
 
-    ResponseEntity<List<TripDTO>> response = tripController.getAllTrips("future", "future trip");
+    ResponseEntity<PaginatedResponse<TripDTO>> response =
+        tripController.getAllTrips("future", "future trip", 0, 10);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertEquals("Future Trip", response.getBody().get(0).getName());
+    assertEquals("Future Trip", response.getBody().getContent().get(0).getName());
   }
 
   @Test

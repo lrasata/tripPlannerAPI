@@ -2,14 +2,18 @@ package com.lrasata.tripPlannerAPI.rest.controller;
 
 import com.lrasata.tripPlannerAPI.repository.TripRepository;
 import com.lrasata.tripPlannerAPI.service.TripService;
+import com.lrasata.tripPlannerAPI.service.dto.PaginatedResponse;
 import com.lrasata.tripPlannerAPI.service.dto.TripDTO;
 import jakarta.validation.Valid;
 import java.net.URI;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,24 +34,32 @@ public class TripController {
   }
 
   @GetMapping
-  public ResponseEntity<List<TripDTO>> getAllTrips(
+  public ResponseEntity<PaginatedResponse<TripDTO>> getAllTrips(
       @RequestParam(required = false) String dateFilter,
-      @RequestParam(required = false) String keyword) {
+      @RequestParam(required = false) String keyword,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size) {
     LOG.debug(
-        "REST request to get all Trips with dateFilter= {}, and keyword= {}", dateFilter, keyword);
-    List<TripDTO> trips;
+        "REST request to get all Trips with dateFilter={}, keyword={}, page={}, size={}",
+        dateFilter,
+        keyword,
+        page,
+        size);
+
+    Pageable pageable = PageRequest.of(page, size, Sort.by("startDate").descending());
+    Page<TripDTO> trips;
 
     if (keyword != null && !keyword.isBlank()) {
-      trips = tripService.findTripsByKeyword(keyword);
+      trips = tripService.findTripsByKeyword(keyword, pageable);
     } else {
       switch (dateFilter != null ? dateFilter.toLowerCase() : "") {
-        case "past" -> trips = tripService.findTripsInPast();
-        case "future" -> trips = tripService.findTripsInFuture();
-        default -> trips = tripService.findAll();
+        case "past" -> trips = tripService.findTripsInPast(pageable);
+        case "future" -> trips = tripService.findTripsInFuture(pageable);
+        default -> trips = tripService.findAll(pageable);
       }
     }
 
-    return ResponseEntity.ok().body(trips);
+    return ResponseEntity.ok(new PaginatedResponse<>(trips));
   }
 
   @GetMapping("/{id}")
