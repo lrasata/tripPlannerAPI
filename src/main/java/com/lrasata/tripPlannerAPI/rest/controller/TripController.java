@@ -46,7 +46,7 @@ public class TripController {
         page,
         size);
 
-    Pageable pageable = PageRequest.of(page, size, Sort.by("startDate").descending());
+    Pageable pageable = PageRequest.of(page, size, Sort.by("departureDate").descending());
     Page<TripDTO> trips;
 
     if (keyword != null && !keyword.isBlank()) {
