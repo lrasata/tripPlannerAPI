@@ -44,10 +44,20 @@ public class TripService {
     return tripRepository.findAll(pageable).map(tripMapper::toDto);
   }
 
+  public Page<TripDTO> findTripsByParticipant(Long userId, Pageable pageable) {
+    Page<Trip> trips = tripRepository.findByParticipants_Id(userId, pageable);
+    return trips.map(tripMapper::toDto);
+  }
+
   public Page<TripDTO> findTripsInPast(Pageable pageable) {
     return tripRepository
         .findByDepartureDateBefore(LocalDate.now(), pageable)
         .map(tripMapper::toDto);
+  }
+
+  public Page<TripDTO> findTripsByParticipantInPast(Long userId, Pageable pageable) {
+    Page<Trip> trips = tripRepository.findByParticipantInPast(userId, pageable);
+    return trips.map(tripMapper::toDto);
   }
 
   public Page<TripDTO> findTripsInFuture(Pageable pageable) {
@@ -56,10 +66,21 @@ public class TripService {
         .map(tripMapper::toDto);
   }
 
+  public Page<TripDTO> findTripsByParticipantInFuture(Long userId, Pageable pageable) {
+    Page<Trip> trips = tripRepository.findByParticipantInFuture(userId, pageable);
+    return trips.map(tripMapper::toDto);
+  }
+
   public Page<TripDTO> findTripsByKeyword(String keyword, Pageable pageable) {
     return tripRepository
         .findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(keyword, keyword, pageable)
         .map(tripMapper::toDto);
+  }
+
+  public Page<TripDTO> findTripsByParticipantAndKeyword(
+      Long userId, String keyword, Pageable pageable) {
+    Page<Trip> trips = tripRepository.findByParticipantAndKeyword(userId, keyword, pageable);
+    return trips.map(tripMapper::toDto);
   }
 
   public Optional<TripDTO> findOneById(Long id) {

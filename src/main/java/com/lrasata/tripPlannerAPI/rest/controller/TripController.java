@@ -1,6 +1,6 @@
 package com.lrasata.tripPlannerAPI.rest.controller;
 
-import com.lrasata.tripPlannerAPI.repository.TripRepository;
+import com.lrasata.tripPlannerAPI.entity.User;
 import com.lrasata.tripPlannerAPI.service.TripService;
 import com.lrasata.tripPlannerAPI.service.dto.PaginatedResponse;
 import com.lrasata.tripPlannerAPI.service.dto.TripDTO;
@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -26,11 +27,8 @@ public class TripController {
 
   private final TripService tripService;
 
-  private final TripRepository tripRepository;
-
-  public TripController(TripService tripService, TripRepository tripRepository) {
+  public TripController(TripService tripService) {
     this.tripService = tripService;
-    this.tripRepository = tripRepository;
   }
 
   @GetMapping
@@ -38,7 +36,8 @@ public class TripController {
       @RequestParam(required = false) String dateFilter,
       @RequestParam(required = false) String keyword,
       @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "10") int size) {
+      @RequestParam(defaultValue = "10") int size,
+      Authentication authentication) {
     LOG.debug(
         "REST request to get all Trips with dateFilter={}, keyword={}, page={}, size={}",
         dateFilter,
@@ -46,16 +45,41 @@ public class TripController {
         page,
         size);
 
+    User currentUser = (User) authentication.getPrincipal();
+
+    boolean isAdmin =
+        currentUser.getAuthorities().stream()
+            .anyMatch(
+                a ->
+                    a.getAuthority().equals("ROLE_ADMIN")
+                        || a.getAuthority().equals("ROLE_SUPER_ADMIN"));
+
+    Long userId = currentUser.getId();
+
     Pageable pageable = PageRequest.of(page, size, Sort.by("departureDate").descending());
     Page<TripDTO> trips;
 
-    if (keyword != null && !keyword.isBlank()) {
-      trips = tripService.findTripsByKeyword(keyword, pageable);
+    if (isAdmin) {
+      // Admin: can see all trips
+      if (keyword != null && !keyword.isBlank()) {
+        trips = tripService.findTripsByKeyword(keyword, pageable);
+      } else {
+        switch (dateFilter != null ? dateFilter.toLowerCase() : "") {
+          case "past" -> trips = tripService.findTripsInPast(pageable);
+          case "future" -> trips = tripService.findTripsInFuture(pageable);
+          default -> trips = tripService.findAll(pageable);
+        }
+      }
     } else {
-      switch (dateFilter != null ? dateFilter.toLowerCase() : "") {
-        case "past" -> trips = tripService.findTripsInPast(pageable);
-        case "future" -> trips = tripService.findTripsInFuture(pageable);
-        default -> trips = tripService.findAll(pageable);
+      // Non-admin: only trips where current user is a participant
+      if (keyword != null && !keyword.isBlank()) {
+        trips = tripService.findTripsByParticipantAndKeyword(userId, keyword, pageable);
+      } else {
+        switch (dateFilter != null ? dateFilter.toLowerCase() : "") {
+          case "past" -> trips = tripService.findTripsByParticipantInPast(userId, pageable);
+          case "future" -> trips = tripService.findTripsByParticipantInFuture(userId, pageable);
+          default -> trips = tripService.findTripsByParticipant(userId, pageable);
+        }
       }
     }
 
@@ -107,7 +131,7 @@ public class TripController {
           HttpStatus.BAD_REQUEST, "URI endpoint and  request body don't match");
     }
 
-    if (!tripRepository.existsById(id)) {
+    if (tripService.findOneById(id).isEmpty()) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Trip not found");
     }
 

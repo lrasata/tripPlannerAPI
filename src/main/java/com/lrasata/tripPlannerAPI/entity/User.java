@@ -46,6 +46,13 @@ public class User implements UserDetails {
   @ManyToMany(mappedBy = "participants")
   private List<Trip> trips = new ArrayList<>();
 
+  public User(Long id, String fullName) {
+    this.id = id;
+    this.fullName = fullName;
+  }
+
+  public User() {}
+
   public Long getId() {
     return id;
   }
