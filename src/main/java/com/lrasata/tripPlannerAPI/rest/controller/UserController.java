@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,9 +30,8 @@ public class UserController {
 
   @GetMapping("/me")
   @PreAuthorize("isAuthenticated()")
-  public ResponseEntity<UserDTO> authenticatedUser() {
+  public ResponseEntity<UserDTO> authenticatedUser(Authentication authentication) {
     LOG.debug("REST request to get current user");
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
     if (authentication == null
         || !authentication.isAuthenticated()
@@ -47,11 +45,9 @@ public class UserController {
 
   @PutMapping("/profile")
   @PreAuthorize("isAuthenticated()")
-  public ResponseEntity<UserDTO> updateProfile(@RequestBody UserProfileDTO profileDTO) {
-    String email =
-        SecurityContextHolder.getContext()
-            .getAuthentication()
-            .getName(); // in the app context thd username is the email
+  public ResponseEntity<UserDTO> updateProfile(
+      @RequestBody UserProfileDTO profileDTO, Authentication authentication) {
+    String email = authentication.getName(); // in the app context thd username is the email
 
     return ResponseEntity.ok(userService.updateUserProfile(email, profileDTO));
   }

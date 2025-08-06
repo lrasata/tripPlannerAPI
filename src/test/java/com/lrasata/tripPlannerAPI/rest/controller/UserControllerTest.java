@@ -3,14 +3,18 @@ package com.lrasata.tripPlannerAPI.rest.controller;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.lrasata.tripPlannerAPI.entity.User;
 import com.lrasata.tripPlannerAPI.service.UserService;
 import com.lrasata.tripPlannerAPI.service.dto.RoleDTO;
 import com.lrasata.tripPlannerAPI.service.dto.UserDTO;
+import com.lrasata.tripPlannerAPI.service.dto.UserProfileDTO;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 
 class UserControllerTest {
 
@@ -25,6 +29,64 @@ class UserControllerTest {
 
   private UserDTO createUser(Long id, String name, String email) {
     return new UserDTO(id, name, email, new RoleDTO(), List.of(101L, 102L));
+  }
+
+  @Test
+  void authenticatedUser_shouldReturnUnauthorized_whenAnonymousUser() {
+    // Mock anonymous authentication
+    Authentication authentication = mock(Authentication.class);
+    when(authentication.isAuthenticated()).thenReturn(false);
+    when(authentication.getPrincipal()).thenReturn("anonymousUser");
+
+    ResponseEntity<UserDTO> response = userController.authenticatedUser(authentication);
+
+    assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    assertNull(response.getBody());
+  }
+
+  @Test
+  void authenticatedUser_shouldReturnUser_whenAuthenticated() {
+    // Mock authenticated user
+    User mockUser = new User();
+    mockUser.setId(1L);
+    mockUser.setEmail("test@example.com");
+
+    UserDTO mockUserDTO = new UserDTO();
+    mockUserDTO.setEmail("test@example.com");
+
+    Authentication authentication = mock(Authentication.class);
+    when(authentication.isAuthenticated()).thenReturn(true);
+    when(authentication.getPrincipal()).thenReturn(mockUser);
+
+    when(userService.getUserById(1L)).thenReturn(mockUserDTO);
+
+    ResponseEntity<UserDTO> response = userController.authenticatedUser(authentication);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals("test@example.com", response.getBody().getEmail());
+  }
+
+  @Test
+  void updateProfile_shouldUpdateUserProfile() {
+    String email = "test@example.com";
+
+    UserProfileDTO profileDTO = new UserProfileDTO();
+    profileDTO.setFullName("Jane Doe");
+
+    UserDTO updatedUser = new UserDTO();
+    updatedUser.setEmail(email);
+    updatedUser.setFullName("Jane Doe");
+
+    Authentication authentication = mock(Authentication.class);
+    when(authentication.getName()).thenReturn(email);
+
+    when(userService.updateUserProfile(email, profileDTO)).thenReturn(updatedUser);
+
+    ResponseEntity<UserDTO> response = userController.updateProfile(profileDTO, authentication);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals("Jane Doe", response.getBody().getFullName());
+    assertEquals(email, response.getBody().getEmail());
   }
 
   @Test
@@ -50,17 +112,6 @@ class UserControllerTest {
     assertEquals(1, response.getBody().size());
     assertTrue(response.getBody().get(0).getEmail().contains("charlie"));
   }
-
-  //  @Test
-  //  void getUserById_returnsUser() {
-  //    UserDTO user = createUser(4L, "Diana", "diana@example.com");
-  //    when(userService.getUserById(4L)).thenReturn(user);
-  //
-  //    ResponseEntity<UserDTO> response = userController.getUserById(4L);
-  //
-  //    assertEquals("Diana", response.getBody().getFullName());
-  //    assertEquals(RoleEnum.ROLE_PARTICIPANT, response.getBody().getRole());
-  //  }
 
   @Test
   void createUser_returnsCreatedUser() {
