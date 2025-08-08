@@ -10,12 +10,16 @@ import com.lrasata.tripPlannerAPI.repository.UserRepository;
 import com.lrasata.tripPlannerAPI.rest.response.LoginResponse;
 import com.lrasata.tripPlannerAPI.service.dto.LoginUserDTO;
 import com.lrasata.tripPlannerAPI.service.dto.RegisterUserDTO;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -106,8 +110,9 @@ public class AuthenticationService {
     String jwtToken = jwtService.generateAccessToken(user);
     LoginResponse loginResponse = new LoginResponse();
     loginResponse.setToken(jwtToken);
-    loginResponse.setExpiresIn(accessTokenExpirationTime);
+    loginResponse.setTokenExpiresIn(accessTokenExpirationTime);
     loginResponse.setRefreshToken(refreshJwtToken);
+    loginResponse.setRefreshTokenExpiresIn(refreshTokenExpirationTime);
 
     return loginResponse;
   }
@@ -164,7 +169,7 @@ public class AuthenticationService {
     return userRepository.save(user);
   }
 
-  public ResponseCookie setResponseCookie(String accessToken, Duration duration) {
+  public ResponseCookie setTokenCookie(String accessToken, Duration duration) {
     return ResponseCookie.from("token", accessToken)
         .httpOnly(true)
         .secure(cookieSecureAttribute) // Add the "Secure" attribute to the cookie.
@@ -175,6 +180,43 @@ public class AuthenticationService {
         .build();
   }
 
+  public ResponseCookie setRefreshTokenCookie(String refreshToken, Duration duration) {
+    return ResponseCookie.from("refreshToken", refreshToken)
+        .httpOnly(true)
+        .secure(cookieSecureAttribute)
+        .path("/")
+        .maxAge(duration)
+        .sameSite(cookieSameSite)
+        .build();
+  }
+
+  /** Helper method to set the access and refresh token cookies in the response. */
+  public void setAuthCookies(HttpServletResponse response, LoginResponse loginResponse) {
+    ResponseCookie tokenCookie =
+        setTokenCookie(
+            loginResponse.getToken(), Duration.ofMillis(loginResponse.getTokenExpiresIn()));
+
+    ResponseCookie refreshTokenCookie =
+        setRefreshTokenCookie(
+            loginResponse.getRefreshToken(),
+            Duration.ofMillis(loginResponse.getRefreshTokenExpiresIn()));
+
+    response.addHeader(HttpHeaders.SET_COOKIE, tokenCookie.toString());
+    response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+  }
+
+  public String extractRefreshTokenFromCookies(HttpServletRequest request) {
+    if (request.getCookies() != null) {
+      for (Cookie cookie : request.getCookies()) {
+        if ("refreshToken".equals(cookie.getName())) {
+          return cookie.getValue();
+        }
+      }
+    }
+    return null;
+  }
+
+  @Transactional
   public void logout(String refreshToken) {
     refreshTokenRepository.deleteByToken(refreshToken);
   }

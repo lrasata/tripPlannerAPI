@@ -5,6 +5,7 @@ import com.lrasata.tripPlannerAPI.rest.response.LoginResponse;
 import com.lrasata.tripPlannerAPI.service.AuthenticationService;
 import com.lrasata.tripPlannerAPI.service.dto.LoginUserDTO;
 import com.lrasata.tripPlannerAPI.service.dto.RegisterUserDTO;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.time.Duration;
 import java.util.Map;
@@ -57,36 +58,44 @@ public class AuthenticationController {
     LOG.debug("REST request to login : {}", loginUserDto.getEmail());
 
     LoginResponse loginResponse = authenticationService.login(loginUserDto);
-    String jwtToken = loginResponse.getToken(); // Make sure your LoginResponse contains the token
-
-    ResponseCookie cookie = authenticationService.setResponseCookie(jwtToken, Duration.ofDays(1));
-    response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+    authenticationService.setAuthCookies(response, loginResponse);
 
     return ResponseEntity.ok(loginResponse);
   }
 
   @PostMapping("/refresh-token")
-  public ResponseEntity<?> refresh(
-      @RequestBody Map<String, String> payload, HttpServletResponse response) {
+  public ResponseEntity<?> refresh(HttpServletRequest request, HttpServletResponse response) {
     LOG.debug("REST request to refresh token");
-    String refreshToken = payload.get("refreshToken");
-    LoginResponse tokens = authenticationService.refreshTokens(refreshToken);
-    String newAccessToken = tokens.getToken();
+    try {
 
-    ResponseCookie cookie =
-        authenticationService.setResponseCookie(newAccessToken, Duration.ofDays(1));
-    response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+      String refreshToken = authenticationService.extractRefreshTokenFromCookies(request);
+      if (refreshToken == null || refreshToken.isEmpty()) {
+        throw new RuntimeException("Missing refresh token");
+      }
 
-    return ResponseEntity.ok(tokens);
+      LoginResponse loginResponse = authenticationService.refreshTokens(refreshToken);
+      authenticationService.setAuthCookies(response, loginResponse);
+
+      return ResponseEntity.ok(loginResponse);
+
+    } catch (RuntimeException ex) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", ex.getMessage()));
+    }
   }
 
   @PostMapping("/logout")
-  public ResponseEntity<Void> logout(HttpServletResponse response) {
-    ResponseCookie cookie =
-        authenticationService.setResponseCookie(
-            "", Duration.ofDays(0)); // cookie token expires immediately
+  public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
+    // remove refreshToken from database
+    String refreshToken = authenticationService.extractRefreshTokenFromCookies(request);
+    authenticationService.logout(refreshToken);
 
-    response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+    // set token and refreshToken cookie headers to expire immediately
+    ResponseCookie tokenCookie = authenticationService.setTokenCookie("", Duration.ofDays(0));
+    response.addHeader(HttpHeaders.SET_COOKIE, tokenCookie.toString());
+
+    ResponseCookie refreshTokenCookie =
+        authenticationService.setRefreshTokenCookie("", Duration.ofDays(0));
+    response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
 
     return ResponseEntity.ok().build();
   }
