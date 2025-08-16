@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -24,8 +25,8 @@ public class SecurityConfiguration {
   private final AuthenticationProvider authenticationProvider;
   private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-  @Value("${trip-design-app.allowed-origin}")
-  private String allowedOrigin;
+  @Value("${trip-design-app.allowed-origins}")
+  private List<String> allowedOrigins;
 
   public SecurityConfiguration(
       JwtAuthenticationFilter jwtAuthenticationFilter,
@@ -42,7 +43,12 @@ public class SecurityConfiguration {
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(
             auth ->
-                auth.requestMatchers(
+                auth
+                    // Allow preflight requests
+                    .requestMatchers(HttpMethod.OPTIONS, "/**")
+                    .permitAll()
+                    // Allow public endpoints
+                    .requestMatchers(
                         "/auth/**",
                         "/actuator/**",
                         "/v3/api-docs/**",
@@ -61,7 +67,7 @@ public class SecurityConfiguration {
   CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
 
-    configuration.setAllowedOrigins(List.of(allowedOrigin));
+    configuration.setAllowedOrigins(allowedOrigins);
     configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
     configuration.setAllowedHeaders(List.of("*"));
     // allow credentials
