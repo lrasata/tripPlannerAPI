@@ -1,5 +1,6 @@
 package com.lrasata.tripPlannerAPI.service.dto;
 
+import com.lrasata.tripPlannerAPI.entity.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -28,6 +29,8 @@ public class UserDTO implements Serializable {
 
   private List<Long> tripIds;
 
+  private List<UserFileMetadataDTO> extraInfo;
+
   public UserDTO() {}
 
   public UserDTO(Long id, String fullName, String email, RoleDTO role, List<Long> tripIds) {
@@ -36,6 +39,15 @@ public class UserDTO implements Serializable {
     this.email = email;
     this.role = role;
     this.tripIds = tripIds;
+  }
+
+  public UserDTO(User user, List<UserFileMetadataDTO> extraInfo) {
+    this.id = user.getId();
+    this.fullName = user.getFullName();
+    this.email = user.getEmail();
+    this.role = new RoleDTO(user.getRole().getName().name(), user.getRole().getDescription());
+    this.tripIds = user.getTrips().stream().map(trip -> trip.getId()).toList();
+    this.extraInfo = extraInfo;
   }
 
   public Long getId() {
@@ -76,5 +88,13 @@ public class UserDTO implements Serializable {
 
   public void setRole(RoleDTO role) {
     this.role = role;
+  }
+
+  public List<UserFileMetadataDTO> getExtraInfo() {
+    return extraInfo;
+  }
+
+  public void setExtraInfo(List<UserFileMetadataDTO> extraInfo) {
+    this.extraInfo = extraInfo;
   }
 }

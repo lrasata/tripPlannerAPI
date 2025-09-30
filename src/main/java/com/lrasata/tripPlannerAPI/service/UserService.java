@@ -5,9 +5,9 @@ import com.lrasata.tripPlannerAPI.entity.User;
 import com.lrasata.tripPlannerAPI.repository.TripRepository;
 import com.lrasata.tripPlannerAPI.repository.UserRepository;
 import com.lrasata.tripPlannerAPI.service.dto.UserDTO;
+import com.lrasata.tripPlannerAPI.service.dto.UserFileMetadataDTO;
 import com.lrasata.tripPlannerAPI.service.dto.UserProfileDTO;
 import com.lrasata.tripPlannerAPI.service.mapper.UserMapper;
-import com.lrasata.tripPlannerAPI.service.mapper.UserProfileMapper;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
@@ -24,19 +24,19 @@ public class UserService {
   private final UserMapper userMapper;
   private final TripRepository tripRepository;
   private final PasswordEncoder passwordEncoder;
-  private final UserProfileMapper userProfileMapper;
+  private final UserExtraInfoService userExtraInfoService;
 
   public UserService(
       UserRepository userRepository,
       UserMapper userMapper,
       TripRepository tripRepository,
       PasswordEncoder passwordEncoder,
-      UserProfileMapper userProfileMapper) {
+      UserExtraInfoService userExtraInfoService) {
     this.userRepository = userRepository;
     this.userMapper = userMapper;
     this.tripRepository = tripRepository;
     this.passwordEncoder = passwordEncoder;
-    this.userProfileMapper = userProfileMapper;
+    this.userExtraInfoService = userExtraInfoService;
   }
 
   public UserDTO createUser(UserDTO userDTO) {
@@ -65,10 +65,14 @@ public class UserService {
   }
 
   public UserDTO getUserById(Long id) {
-    return userMapper.toDto(
+    User user =
         userRepository
             .findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("User not found with id " + id)));
+            .orElseThrow(() -> new EntityNotFoundException("User not found with id " + id));
+
+    List<UserFileMetadataDTO> extraInfo = userExtraInfoService.getFilesForUser(id);
+
+    return new UserDTO(user, extraInfo);
   }
 
   public UserDTO updateUser(Long id, UserDTO userDTO) {

@@ -126,7 +126,14 @@
 			<scope>runtime</scope>
 		</dependency>
 
-	</dependencies>
+        <!-- AWS SDK for DynamoDB -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>dynamodb</artifactId>
+            <version>2.27.21</version>
+        </dependency>
+
+    </dependencies>
 
 	<build>
 		<plugins>
