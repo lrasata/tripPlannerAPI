@@ -4,6 +4,7 @@ public class TripMetadataDTO {
   private String tripId;
   private String fileKey;
   private String thumbnailKey;
+  private String resource;
 
   public String getTripId() {
     return tripId;
@@ -27,5 +28,13 @@ public class TripMetadataDTO {
 
   public void setThumbnailKey(String thumbnailKey) {
     this.thumbnailKey = thumbnailKey;
+  }
+
+  public String getResource() {
+    return resource;
+  }
+
+  public void setResource(String resource) {
+    this.resource = resource;
   }
 }

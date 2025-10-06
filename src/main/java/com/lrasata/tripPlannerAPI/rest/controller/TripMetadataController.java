@@ -18,7 +18,7 @@ import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
 @RestController
-@RequestMapping("/api/trip-metadata")
+@RequestMapping("/api")
 public class TripMetadataController {
 
   private static final Logger LOG = LoggerFactory.getLogger(TripMetadataController.class);
@@ -33,7 +33,7 @@ public class TripMetadataController {
   }
 
   // TODO check in cloudfront what should be the path here
-  @GetMapping("/{type:(?:uploads|thumbnails)}/{tripId}/{fileName}")
+  @GetMapping("/{type:(?:uploads|thumbnails)}/trips/{tripId}/{fileName}")
   public void getTripImage(
       @PathVariable String type,
       @PathVariable String tripId,
@@ -53,7 +53,7 @@ public class TripMetadataController {
     User currentUser = (User) authentication.getPrincipal();
 
     // Construct the S3 key
-    String s3Key = type + "/" + tripId + "/" + fileName;
+    String s3Key = type + "/trips/" + tripId + "/" + fileName;
 
     // Check if current user is participant of the trip OR SUPER_ADMIN OR is admin of the trip
     if (!tripService.checkIfUserCanAccessTrip(Long.valueOf(tripId), currentUser)) {

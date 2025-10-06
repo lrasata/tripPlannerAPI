@@ -15,7 +15,7 @@ public class TripMetadataService {
 
   private final DynamoDbClient dynamoDbClient;
 
-  @Value("${aws.dynamodb.table.user-extra-info}")
+  @Value("${aws.dynamodb.table.metadata.name}")
   private String tableName;
 
   public TripMetadataService(DynamoDbClient dynamoDbClient) {
@@ -40,6 +40,7 @@ public class TripMetadataService {
               metadata.setTripId(item.get("trip_id").s());
               metadata.setFileKey(item.get("file_key").s());
               metadata.setThumbnailKey(item.get("thumbnail_key").s());
+              metadata.setResource(item.get("resource").s());
               return metadata;
             })
         .toList();
