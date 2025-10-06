@@ -1,16 +1,16 @@
 package com.lrasata.tripPlannerAPI.service.dto;
 
-public class UserFileMetadataDTO {
-  private String userId;
+public class TripMetadataDTO {
+  private String tripId;
   private String fileKey;
   private String thumbnailKey;
 
-  public String getUserId() {
-    return userId;
+  public String getTripId() {
+    return tripId;
   }
 
-  public void setUserId(String userId) {
-    this.userId = userId;
+  public void setTripId(String userId) {
+    this.tripId = userId;
   }
 
   public String getFileKey() {

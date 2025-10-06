@@ -49,4 +49,10 @@ public interface TripRepository extends JpaRepository<Trip, Long> {
       AND t.departureDate >= CURRENT_DATE
   """)
   Page<Trip> findByParticipantInFuture(@Param("userId") Long userId, Pageable pageable);
+
+  @Query(
+      "SELECT CASE WHEN COUNT(t) > 0 THEN true ELSE false END "
+          + "FROM Trip t JOIN t.participants p "
+          + "WHERE t.id = :tripId AND p.id = :userId")
+  boolean existsByTripIdAndUserId(@Param("tripId") Long tripId, @Param("userId") Long userId);
 }

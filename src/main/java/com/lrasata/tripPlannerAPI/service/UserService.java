@@ -5,7 +5,6 @@ import com.lrasata.tripPlannerAPI.entity.User;
 import com.lrasata.tripPlannerAPI.repository.TripRepository;
 import com.lrasata.tripPlannerAPI.repository.UserRepository;
 import com.lrasata.tripPlannerAPI.service.dto.UserDTO;
-import com.lrasata.tripPlannerAPI.service.dto.UserFileMetadataDTO;
 import com.lrasata.tripPlannerAPI.service.dto.UserProfileDTO;
 import com.lrasata.tripPlannerAPI.service.mapper.UserMapper;
 import jakarta.persistence.EntityNotFoundException;
@@ -24,19 +23,16 @@ public class UserService {
   private final UserMapper userMapper;
   private final TripRepository tripRepository;
   private final PasswordEncoder passwordEncoder;
-  private final UserExtraInfoService userExtraInfoService;
 
   public UserService(
       UserRepository userRepository,
       UserMapper userMapper,
       TripRepository tripRepository,
-      PasswordEncoder passwordEncoder,
-      UserExtraInfoService userExtraInfoService) {
+      PasswordEncoder passwordEncoder) {
     this.userRepository = userRepository;
     this.userMapper = userMapper;
     this.tripRepository = tripRepository;
     this.passwordEncoder = passwordEncoder;
-    this.userExtraInfoService = userExtraInfoService;
   }
 
   public UserDTO createUser(UserDTO userDTO) {
@@ -65,14 +61,10 @@ public class UserService {
   }
 
   public UserDTO getUserById(Long id) {
-    User user =
+    return userMapper.toDto(
         userRepository
             .findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("User not found with id " + id));
-
-    List<UserFileMetadataDTO> extraInfo = userExtraInfoService.getFilesForUser(id);
-
-    return new UserDTO(user, extraInfo);
+            .orElseThrow(() -> new EntityNotFoundException("User not found with id " + id)));
   }
 
   public UserDTO updateUser(Long id, UserDTO userDTO) {

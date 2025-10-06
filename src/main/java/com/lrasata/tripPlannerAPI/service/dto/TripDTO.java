@@ -1,5 +1,6 @@
 package com.lrasata.tripPlannerAPI.service.dto;
 
+import com.lrasata.tripPlannerAPI.entity.Trip;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -23,8 +24,37 @@ public class TripDTO implements Serializable {
   private Integer participantCount;
   private List<Long> participantIds;
 
+  private List<TripMetadataDTO> extraInfo;
+
   //    private TripBudgetDTO budget;
   //    private List<ActivityDTO> activities;
+
+  public TripDTO() {
+    this.participantIds = new ArrayList<>();
+    this.extraInfo = new ArrayList<>();
+  }
+
+  public TripDTO(Trip trip, List<TripMetadataDTO> extraInfo) {
+    this.id = trip.getId();
+    this.name = trip.getName();
+    this.description = trip.getDescription();
+    this.departureDate = trip.getDepartureDate();
+    this.returnDate = trip.getReturnDate();
+    this.departureLocation =
+        trip.getDepartureLocation() != null
+            ? new LocationDTO(trip.getDepartureLocation().getId())
+            : null;
+    this.arrivalLocation =
+        trip.getArrivalLocation() != null
+            ? new LocationDTO(trip.getArrivalLocation().getId())
+            : null;
+    this.participantCount = trip.getParticipants() != null ? trip.getParticipants().size() : 0;
+    this.participantIds =
+        trip.getParticipants() != null
+            ? trip.getParticipants().stream().map(user -> user.getId()).toList()
+            : new ArrayList<>();
+    this.extraInfo = extraInfo;
+  }
 
   public Long getId() {
     return id;
@@ -109,5 +139,13 @@ public class TripDTO implements Serializable {
 
   public void setParticipantCount(Integer participantCount) {
     this.participantCount = participantCount;
+  }
+
+  public List<TripMetadataDTO> getExtraInfo() {
+    return extraInfo;
+  }
+
+  public void setExtraInfo(List<TripMetadataDTO> extraInfo) {
+    this.extraInfo = extraInfo;
   }
 }

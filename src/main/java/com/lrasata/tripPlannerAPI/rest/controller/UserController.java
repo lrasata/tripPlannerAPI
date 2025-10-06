@@ -1,10 +1,8 @@
 package com.lrasata.tripPlannerAPI.rest.controller;
 
 import com.lrasata.tripPlannerAPI.entity.User;
-import com.lrasata.tripPlannerAPI.service.UserExtraInfoService;
 import com.lrasata.tripPlannerAPI.service.UserService;
 import com.lrasata.tripPlannerAPI.service.dto.UserDTO;
-import com.lrasata.tripPlannerAPI.service.dto.UserFileMetadataDTO;
 import com.lrasata.tripPlannerAPI.service.dto.UserProfileDTO;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -21,12 +19,10 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
   private final UserService userService;
-  private final UserExtraInfoService userExtraInfoService;
   private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
 
-  public UserController(UserService userService, UserExtraInfoService userExtraInfoService) {
+  public UserController(UserService userService) {
     this.userService = userService;
-    this.userExtraInfoService = userExtraInfoService;
   }
 
   @GetMapping("/me")
@@ -75,12 +71,6 @@ public class UserController {
   public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
     LOG.debug("REST request to get User : {}", id);
     return ResponseEntity.ok(userService.getUserById(id));
-  }
-
-  @GetMapping("/{id}/extra-info")
-  @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
-  public List<UserFileMetadataDTO> getUserExtra(@PathVariable Long id) {
-    return userExtraInfoService.getFilesForUser(id);
   }
 
   @PostMapping

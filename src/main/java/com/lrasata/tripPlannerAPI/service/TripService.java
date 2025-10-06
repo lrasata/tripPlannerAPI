@@ -1,10 +1,12 @@
 package com.lrasata.tripPlannerAPI.service;
 
+import com.lrasata.tripPlannerAPI.entity.RoleEnum;
 import com.lrasata.tripPlannerAPI.entity.Trip;
 import com.lrasata.tripPlannerAPI.entity.User;
 import com.lrasata.tripPlannerAPI.repository.TripRepository;
 import com.lrasata.tripPlannerAPI.repository.UserRepository;
 import com.lrasata.tripPlannerAPI.service.dto.TripDTO;
+import com.lrasata.tripPlannerAPI.service.dto.TripMetadataDTO;
 import com.lrasata.tripPlannerAPI.service.mapper.TripMapper;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
@@ -12,8 +14,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,22 +22,23 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class TripService {
 
-  private static final Logger LOG = LoggerFactory.getLogger(TripService.class);
-
   private final TripRepository tripRepository;
   private final LocationService locationService;
   private final UserRepository userRepository;
   private final TripMapper tripMapper;
+  private final TripMetadataService tripMetadataService;
 
   public TripService(
       TripRepository tripRepository,
       LocationService locationService,
       TripMapper tripMapper,
-      UserRepository userRepository) {
+      UserRepository userRepository,
+      TripMetadataService tripMetadataService) {
     this.tripRepository = tripRepository;
     this.locationService = locationService;
     this.tripMapper = tripMapper;
     this.userRepository = userRepository;
+    this.tripMetadataService = tripMetadataService;
   }
 
   public Page<TripDTO> findAll(Pageable pageable) {
@@ -84,7 +85,13 @@ public class TripService {
   }
 
   public Optional<TripDTO> findOneById(Long id) {
-    return tripRepository.findById(id).map(tripMapper::toDto);
+    return tripRepository
+        .findById(id)
+        .map(
+            trip -> {
+              List<TripMetadataDTO> extraInfo = tripMetadataService.getFileByTrip(id);
+              return new TripDTO(trip, extraInfo);
+            });
   }
 
   public TripDTO createTrip(TripDTO dto) {
@@ -161,5 +168,11 @@ public class TripService {
     }
 
     tripRepository.deleteById(id);
+  }
+
+  public boolean checkIfUserCanAccessTrip(Long tripId, User user) {
+    return user.getRole().getName().equals(RoleEnum.ROLE_SUPER_ADMIN)
+        || user.getRole().getName().equals(RoleEnum.ROLE_ADMIN)
+        || tripRepository.existsByTripIdAndUserId(tripId, user.getId());
   }
 }
