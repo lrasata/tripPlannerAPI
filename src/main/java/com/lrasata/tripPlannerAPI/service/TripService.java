@@ -89,8 +89,8 @@ public class TripService {
         .findById(id)
         .map(
             trip -> {
-              List<TripMetadataDTO> extraInfo = tripMetadataService.getFileByTrip(id);
-              return new TripDTO(trip, extraInfo);
+              List<TripMetadataDTO> metadataList = tripMetadataService.getFileByTrip(id);
+              return new TripDTO(trip, metadataList);
             });
   }
 

@@ -18,7 +18,7 @@ import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/trip-metadata")
 public class TripMetadataController {
 
   private static final Logger LOG = LoggerFactory.getLogger(TripMetadataController.class);

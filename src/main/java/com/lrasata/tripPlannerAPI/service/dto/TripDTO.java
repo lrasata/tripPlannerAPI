@@ -24,17 +24,17 @@ public class TripDTO implements Serializable {
   private Integer participantCount;
   private List<Long> participantIds;
 
-  private List<TripMetadataDTO> extraInfo;
+  private List<TripMetadataDTO> metadataList;
 
   //    private TripBudgetDTO budget;
   //    private List<ActivityDTO> activities;
 
   public TripDTO() {
     this.participantIds = new ArrayList<>();
-    this.extraInfo = new ArrayList<>();
+    this.metadataList = new ArrayList<>();
   }
 
-  public TripDTO(Trip trip, List<TripMetadataDTO> extraInfo) {
+  public TripDTO(Trip trip, List<TripMetadataDTO> metadataList) {
     this.id = trip.getId();
     this.name = trip.getName();
     this.description = trip.getDescription();
@@ -53,7 +53,7 @@ public class TripDTO implements Serializable {
         trip.getParticipants() != null
             ? trip.getParticipants().stream().map(user -> user.getId()).toList()
             : new ArrayList<>();
-    this.extraInfo = extraInfo;
+    this.metadataList = metadataList;
   }
 
   public Long getId() {
@@ -141,11 +141,11 @@ public class TripDTO implements Serializable {
     this.participantCount = participantCount;
   }
 
-  public List<TripMetadataDTO> getExtraInfo() {
-    return extraInfo;
+  public List<TripMetadataDTO> getMetadataList() {
+    return metadataList;
   }
 
-  public void setExtraInfo(List<TripMetadataDTO> extraInfo) {
-    this.extraInfo = extraInfo;
+  public void setMetadataList(List<TripMetadataDTO> metadataList) {
+    this.metadataList = metadataList;
   }
 }
