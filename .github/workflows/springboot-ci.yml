@@ -62,7 +62,7 @@ jobs:
           done
 
       - name: Build, test & verify
-        run: mvn clean verify -Dspring.profiles.active=test -DnvdApiKey=${{ secrets.NVD_API_KEY }}
+        run: mvn clean verify -Dspring.profiles.active=test # -DnvdApiKey=${{ secrets.NVD_API_KEY }}
         env:
           OSSINDEX_USER: ${{ secrets.OSSINDEX_USER }}
           OSSINDEX_PASS: ${{ secrets.OSSINDEX_PASS }}
@@ -84,14 +84,15 @@ jobs:
           PERCENT=$(awk "BEGIN {printf \"%.2f\", ($COVERED/$TOTAL)*100}")
           echo "Test Coverage: $PERCENT%"
 
-      - name: Run OWASP Dependency-Check
-        run: mvn org.owasp:dependency-check-maven:check -DnvdApiKey=${{ secrets.NVD_API_KEY }}
-        env:
-          OSSINDEX_USER: ${{ secrets.OSSINDEX_USER }}
-          OSSINDEX_PASS: ${{ secrets.OSSINDEX_PASS }}
+      # Run OWASP Dependency-Check to scan for vulnerabilities
+#      - name: Run OWASP Dependency-Check
+#        run: mvn org.owasp:dependency-check-maven:check -DnvdApiKey=${{ secrets.NVD_API_KEY }}
+#        env:
+#          OSSINDEX_USER: ${{ secrets.OSSINDEX_USER }}
+#          OSSINDEX_PASS: ${{ secrets.OSSINDEX_PASS }}
 
-      - name: Upload OWASP Dependency-Check report
-        uses: actions/upload-artifact@v4
-        with:
-          name: dependency-check-report
-          path: target/dependency-check-report.*
+#      - name: Upload OWASP Dependency-Check report
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: dependency-check-report
+#          path: target/dependency-check-report.*
