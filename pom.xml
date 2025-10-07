@@ -227,6 +227,8 @@
 				<artifactId>dependency-check-maven</artifactId>
 				<version>12.1.0</version>
 				<configuration>
+					<ossIndexUsername>${OSSINDEX_USER}</ossIndexUsername>
+    				<ossIndexPassword>${OSSINDEX_PASS}</ossIndexPassword>
 					<nvdApiKey>${nvdApiKey}</nvdApiKey>
 					<cveValidForHours>24</cveValidForHours>
     				<dataMirroring>false</dataMirroring>
