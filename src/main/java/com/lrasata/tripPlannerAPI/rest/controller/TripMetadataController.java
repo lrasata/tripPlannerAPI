@@ -32,7 +32,7 @@ public class TripMetadataController {
     this.tripService = tripService;
   }
 
-  // TODO check in cloudfront what should be the path here
+  
   @GetMapping("/{type:(?:uploads|thumbnails)}/trips/{tripId}/{fileName}")
   public void getTripImage(
       @PathVariable String type,

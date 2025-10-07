@@ -9,11 +9,11 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 @Configuration
 public class DynamoDbConfig {
 
-  @Value("${aws.dynamodb.region}")
-  private String dynamoRegion;
+  @Value("${aws.region}")
+  private String awsRegion;
 
   @Bean
   public DynamoDbClient dynamoDbClient() {
-    return DynamoDbClient.builder().region(Region.of(dynamoRegion)).build();
+    return DynamoDbClient.builder().region(Region.of(awsRegion)).build();
   }
 }
