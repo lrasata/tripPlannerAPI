@@ -9,6 +9,7 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.QueryRequest;
 import software.amazon.awssdk.services.dynamodb.model.QueryResponse;
+import software.amazon.awssdk.services.dynamodb.model.ResourceNotFoundException;
 
 @Service
 public class TripMetadataService {
@@ -31,18 +32,24 @@ public class TripMetadataService {
                 Map.of(":uid", AttributeValue.builder().s(tripId.toString()).build()))
             .build();
 
-    QueryResponse response = dynamoDbClient.query(request);
+    try {
+      QueryResponse response = dynamoDbClient.query(request);
 
-    return response.items().stream()
-        .map(
-            item -> {
-              TripMetadataDTO metadata = new TripMetadataDTO();
-              metadata.setTripId(item.get("trip_id").s());
-              metadata.setFileKey(item.get("file_key").s());
-              metadata.setThumbnailKey(item.get("thumbnail_key").s());
-              metadata.setResource(item.get("resource").s());
-              return metadata;
-            })
-        .toList();
+      return response.items().stream()
+          .map(
+              item -> {
+                TripMetadataDTO metadata = new TripMetadataDTO();
+                metadata.setTripId(item.get("trip_id").s());
+                metadata.setFileKey(item.get("file_key").s());
+                metadata.setThumbnailKey(item.get("thumbnail_key").s());
+                metadata.setResource(item.get("resource").s());
+                return metadata;
+              })
+          .toList();
+
+    } catch (ResourceNotFoundException e) {
+      // Table doesn’t exist — return empty list instead of failing
+      return List.of();
+    }
   }
 }
