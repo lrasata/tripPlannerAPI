@@ -228,6 +228,8 @@
 				<version>12.1.0</version>
 				<configuration>
 					<nvdApiKey>${nvdApiKey}</nvdApiKey>
+					<cveValidForHours>24</cveValidForHours>
+    				<dataMirroring>false</dataMirroring>
 				</configuration>
 				<executions>
 					<execution>
