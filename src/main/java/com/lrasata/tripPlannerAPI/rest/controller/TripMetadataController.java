@@ -32,7 +32,6 @@ public class TripMetadataController {
     this.tripService = tripService;
   }
 
-  
   @GetMapping("/{type:(?:uploads|thumbnails)}/trips/{tripId}/{fileName}")
   public void getTripImage(
       @PathVariable String type,
