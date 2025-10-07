@@ -10,7 +10,6 @@ import com.lrasata.tripPlannerAPI.service.dto.RoleDTO;
 import com.lrasata.tripPlannerAPI.service.dto.UserDTO;
 import java.util.Arrays;
 import java.util.List;
-
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
