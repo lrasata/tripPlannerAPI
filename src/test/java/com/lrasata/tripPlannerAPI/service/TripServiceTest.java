@@ -29,6 +29,8 @@ class TripServiceTest {
 
   @Mock private UserRepository userRepository;
 
+  @Mock private TripMetadataService tripMetadataService;
+
   @Mock private TripMapper tripMapper;
 
   @InjectMocks private TripService tripService;
