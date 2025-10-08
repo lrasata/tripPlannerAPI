@@ -96,6 +96,9 @@ COOKIE_SAME_SITE=
 SUPER_ADMIN_FULLNAME=
 SUPER_ADMIN_EMAIL=
 SUPER_ADMIN_PASSWORD=
+AWS_REGION=
+DYNAMODB_TABLE_NAME=
+S3_BUCKET_NAME=
 ````
 Each env variable corresponds to the following app properties:
 
@@ -109,9 +112,12 @@ spring.jpa.hibernate.ddl-auto=update
 
 #### Security properties
 ```properties
+
 security.jwt.secret-key=${JWT_SECRET_KEY}
+
 # access token expiration time: 15 min in millisecond
 security.jwt.access-token.expiration=900000
+
 # refresh token expiration time: 60 min in millisecond
 security.jwt.refresh-token.expiration=3600000
 ```
@@ -120,15 +126,36 @@ security.jwt.refresh-token.expiration=3600000
 ```properties
 # allowed origin : domain that is explicitly permitted to access resources  in the context of Cross-Origin Resource Sharing (CORS)
 trip-design-app.allowed-origin=${ALLOWED_ORIGIN}
+
 # trip-design-app.cookie.secure-attribute should be true in production
 trip-design-app.cookie.secure-attribute=${COOKIE_SECURE_ATTRIBUTE}
+
 # trip-design-app.cookie.same-site should be true if cross origin + use credentials
 trip-design-app.cookie.same-site=${COOKIE_SAME_SITE}
+
 # fullname, email and password of bootsraped SuperAdmin user when app starts
 trip-design-app.super-admin.fullname=${SUPER_ADMIN_FULLNAME}
 trip-design-app.super-admin.email=${SUPER_ADMIN_EMAIL}
 trip-design-app.super-admin.password=${SUPER_ADMIN_PASSWORD}
 ```
+
+#### AWS properties
+
+This project allows users to upload a background image for a Trip resource.
+Images are stored and retrieved from AWS infrastructure deployed via the image-uploader project: https://github.com/lrasata/infra-image-uploader
+
+```properties
+
+# AWS Region
+aws.region=${AWS_REGION}
+
+# DynamoDB table for storing metadata
+aws.dynamodb.table.metadata.name=${DYNAMODB_TABLE_NAME}
+
+# S3 bucket for storing uploaded images
+aws.s3.bucket.name=${S3_BUCKET_NAME}
+
+````
 
 #### Logging level
 ```
@@ -142,46 +169,56 @@ Set ENVIRONMENT variable:
 
 ````text
 export ENVIRONMENT=local
+export AWS_ACCESS_KEY_ID=key
+export AWS_SECRET_ACCESS_KEY=secret
+export AWS_REGION=us-east-1
 ````
 
 or for CMD :
 ````text
 set ENVIRONMENT=local
+set AWS_ACCESS_KEY_ID=key
+set AWS_SECRET_ACCESS_KEY=secret
+set AWS_REGION=us-east-1
 ````
 
 or for Powershell:
 ````text
 $Env:ENVIRONMENT = "local"
+$Env:AWS_ACCESS_KEY_ID="KEY"
+$Env:AWS_SECRET_ACCESS_KEY="secret"
+$Env:AWS_REGION="eu-central-1"
 ````
 
 Then run with Maven Wrapper:
 
-```bash
+`````bash
 ./mvnw spring-boot:run
-```
+`````
 
 #### Access Swagger UI
 Open http://localhost:8080/swagger-ui/index.html in your browser to explore and test the API endpoints.
 
 ### Format code
 
-```bash
+`````bash
 mvn spotless:apply    # Formats code
 mvn spotless:check    # Fails build if not formatted
-```
+`````
+
 
 ### Build JAR
 
-```bash
+`````bash
 ./mvnw clean package
 java -jar target/tripPlannerAPI-0.0.1-SNAPSHOT.jar
-```
+`````
 
 ### Testing
 
-```bash
+`````bash
 ./mvnw test
-```
+`````
 
 ---
 
@@ -191,9 +228,9 @@ You can containerize the Trip Planner backend app using Docker and manage multi-
 
 ### Using Docker Compose
 
-```bash
+`````bash
 docker compose up --build
-```
+`````
 
 This will build and start services in `docker-compose.yml` and `docker-compose.override.yml` . In this file, the web app is set up to be accessible on port `8080` : `http://localhost:8080/`
 

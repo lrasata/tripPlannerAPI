@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.lrasata</groupId>
 	<artifactId>tripPlannerAPI</artifactId>
-	<version>1.0.0</version>
+	<version>1.1.0-rc3</version>
 	<name>tripPlannerAPI</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
@@ -126,7 +126,18 @@
 			<scope>runtime</scope>
 		</dependency>
 
-	</dependencies>
+        <!-- AWS SDKs -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>dynamodb</artifactId>
+            <version>2.27.21</version>
+        </dependency>
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>s3</artifactId>
+			<version>2.26.0</version>
+		</dependency>
+    </dependencies>
 
 	<build>
 		<plugins>
@@ -211,21 +222,27 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>org.owasp</groupId>
-				<artifactId>dependency-check-maven</artifactId>
-				<version>12.1.0</version>
-				<configuration>
-					<nvdApiKey>${nvdApiKey}</nvdApiKey>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>check</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+			<!--
+						<plugin>
+							<groupId>org.owasp</groupId>
+							<artifactId>dependency-check-maven</artifactId>
+							<version>12.1.0</version>
+							<configuration>
+								<ossIndexUsername>${OSSINDEX_USER}</ossIndexUsername>
+								<ossIndexPassword>${OSSINDEX_PASS}</ossIndexPassword>
+								<nvdApiKey>${nvdApiKey}</nvdApiKey>
+								<cveValidForHours>24</cveValidForHours>
+								<dataMirroring>false</dataMirroring>
+							</configuration>
+							<executions>
+								<execution>
+									<goals>
+										<goal>check</goal>
+									</goals>
+								</execution>
+							</executions>
+						</plugin>
+			-->
 		</plugins>
 	</build>
 

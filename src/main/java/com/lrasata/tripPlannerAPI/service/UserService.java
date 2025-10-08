@@ -7,7 +7,6 @@ import com.lrasata.tripPlannerAPI.repository.UserRepository;
 import com.lrasata.tripPlannerAPI.service.dto.UserDTO;
 import com.lrasata.tripPlannerAPI.service.dto.UserProfileDTO;
 import com.lrasata.tripPlannerAPI.service.mapper.UserMapper;
-import com.lrasata.tripPlannerAPI.service.mapper.UserProfileMapper;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
@@ -24,19 +23,16 @@ public class UserService {
   private final UserMapper userMapper;
   private final TripRepository tripRepository;
   private final PasswordEncoder passwordEncoder;
-  private final UserProfileMapper userProfileMapper;
 
   public UserService(
       UserRepository userRepository,
       UserMapper userMapper,
       TripRepository tripRepository,
-      PasswordEncoder passwordEncoder,
-      UserProfileMapper userProfileMapper) {
+      PasswordEncoder passwordEncoder) {
     this.userRepository = userRepository;
     this.userMapper = userMapper;
     this.tripRepository = tripRepository;
     this.passwordEncoder = passwordEncoder;
-    this.userProfileMapper = userProfileMapper;
   }
 
   public UserDTO createUser(UserDTO userDTO) {
