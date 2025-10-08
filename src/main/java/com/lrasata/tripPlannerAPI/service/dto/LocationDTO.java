@@ -7,11 +7,14 @@ public class LocationDTO {
   private String country;
   private String countryCode;
 
-  // Constructors
   public LocationDTO() {}
 
-  public LocationDTO(Long id) {
+  public LocationDTO(Long id, String city, String region, String country, String countryCode) {
     this.id = id;
+    this.city = city;
+    this.region = region;
+    this.country = country;
+    this.countryCode = countryCode;
   }
 
   // Getters and Setters

@@ -42,11 +42,21 @@ public class TripDTO implements Serializable {
     this.returnDate = trip.getReturnDate();
     this.departureLocation =
         trip.getDepartureLocation() != null
-            ? new LocationDTO(trip.getDepartureLocation().getId())
+            ? new LocationDTO(
+                trip.getDepartureLocation().getId(),
+                trip.getDepartureLocation().getCity(),
+                trip.getDepartureLocation().getRegion(),
+                trip.getDepartureLocation().getCountry(),
+                trip.getDepartureLocation().getCountryCode())
             : null;
     this.arrivalLocation =
         trip.getArrivalLocation() != null
-            ? new LocationDTO(trip.getArrivalLocation().getId())
+            ? new LocationDTO(
+                trip.getArrivalLocation().getId(),
+                trip.getDepartureLocation().getCity(),
+                trip.getArrivalLocation().getRegion(),
+                trip.getArrivalLocation().getCountry(),
+                trip.getArrivalLocation().getCountryCode())
             : null;
     this.participantCount = trip.getParticipants() != null ? trip.getParticipants().size() : 0;
     this.participantIds =
