@@ -5,6 +5,7 @@ public class TripMetadataDTO {
   private String fileKey;
   private String thumbnailKey;
   private String resource;
+  private Boolean selected;
 
   public String getTripId() {
     return tripId;
@@ -36,5 +37,13 @@ public class TripMetadataDTO {
 
   public void setResource(String resource) {
     this.resource = resource;
+  }
+
+  public Boolean getSelected() {
+    return selected;
+  }
+
+  public void setSelected(Boolean selected) {
+    this.selected = selected;
   }
 }

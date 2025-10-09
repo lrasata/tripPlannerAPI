@@ -43,6 +43,7 @@ public class TripMetadataService {
                 metadata.setFileKey(item.get("file_key").s());
                 metadata.setThumbnailKey(item.get("thumbnail_key").s());
                 metadata.setResource(item.get("resource").s());
+                metadata.setSelected(item.get("selected") != null && item.get("selected").bool());
                 return metadata;
               })
           .toList();
