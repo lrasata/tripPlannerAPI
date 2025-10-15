@@ -74,17 +74,17 @@ public class TripMetadataController {
       IOUtils.copy(s3Object, response.getOutputStream());
       response.flushBuffer();
 
-  } catch (NoSuchKeyException e) {
-    LOG.warn("File not found in S3: {}", s3Key);
-    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+    } catch (NoSuchKeyException e) {
+      LOG.warn("File not found in S3: {}", s3Key);
+      response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 
-  } catch (S3Exception e) {
-    LOG.error("Error fetching object from S3: {}", e.awsErrorDetails().errorMessage());
-    response.setStatus(HttpServletResponse.SC_BAD_GATEWAY);
+    } catch (S3Exception e) {
+      LOG.error("Error fetching object from S3: {}", e.awsErrorDetails().errorMessage());
+      response.setStatus(HttpServletResponse.SC_BAD_GATEWAY);
 
-  } catch (Exception e) {
-    LOG.error("Unexpected error retrieving file {}: {}", s3Key, e.getMessage());
-    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-  }
+    } catch (Exception e) {
+      LOG.error("Unexpected error retrieving file {}: {}", s3Key, e.getMessage());
+      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    }
   }
 }
