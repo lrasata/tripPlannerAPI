@@ -16,6 +16,8 @@ import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 
 @RestController
 @RequestMapping("/api")
@@ -71,8 +73,18 @@ public class TripMetadataController {
       // Stream directly to the client
       IOUtils.copy(s3Object, response.getOutputStream());
       response.flushBuffer();
-    } catch (Exception e) {
-      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-    }
+
+  } catch (NoSuchKeyException e) {
+    LOG.warn("File not found in S3: {}", s3Key);
+    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+  } catch (S3Exception e) {
+    LOG.error("Error fetching object from S3: {}", e.awsErrorDetails().errorMessage());
+    response.setStatus(HttpServletResponse.SC_BAD_GATEWAY);
+
+  } catch (Exception e) {
+    LOG.error("Unexpected error retrieving file {}: {}", s3Key, e.getMessage());
+    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+  }
   }
 }
