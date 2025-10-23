@@ -1,4 +1,4 @@
-name: Continuous Integration
+name: Build and Test Spring Boot Application
 
 on:
   push:
@@ -63,9 +63,9 @@ jobs:
 
       - name: Build, test & verify
         run: mvn clean verify -Dspring.profiles.active=test # -DnvdApiKey=${{ secrets.NVD_API_KEY }}
-        env:
-          OSSINDEX_USER: ${{ secrets.OSSINDEX_USER }}
-          OSSINDEX_PASS: ${{ secrets.OSSINDEX_PASS }}
+#        env:
+#          OSSINDEX_USER: ${{ secrets.OSSINDEX_USER }}
+#          OSSINDEX_PASS: ${{ secrets.OSSINDEX_PASS }}
 
       - name: Upload coverage report as artifact
         uses: actions/upload-artifact@v4
