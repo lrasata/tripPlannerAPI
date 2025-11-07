@@ -27,7 +27,7 @@ public class TripMetadataService {
     QueryRequest request =
         QueryRequest.builder()
             .tableName(tableName)
-            .keyConditionExpression("trip_id = :uid")
+            .keyConditionExpression("id = :uid")
             .expressionAttributeValues(
                 Map.of(":uid", AttributeValue.builder().s(tripId.toString()).build()))
             .build();
@@ -39,7 +39,7 @@ public class TripMetadataService {
           .map(
               item -> {
                 TripMetadataDTO metadata = new TripMetadataDTO();
-                metadata.setTripId(item.get("trip_id").s());
+                metadata.setTripId(item.get("id").s());
                 metadata.setFileKey(item.get("file_key").s());
                 metadata.setThumbnailKey(item.get("thumbnail_key").s());
                 metadata.setResource(item.get("resource").s());
